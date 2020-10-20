@@ -19,7 +19,17 @@ class Graph:
             A boolean which indicates fi the stats of each element of the graph must be updates
             everytime a new element is included.
         updaters: dict, optional
-            A list of functions by which the graph information is updated
+            A list of functions by which the graph information is updated. The function must follow
+            the followint format
+                def f(graph,key,start_vertex,vertex,edge,back):
+                    # Your code
+            where
+                graph : a Graph object
+                key : the key of the updater
+                start_vertex : a vertex, represent the vertes from which you start to propagate
+                vertex : a vertex in which you are working
+                edge : an edge
+                back : a boolean representing if you are working back or forward.
     """
     kind = 'graph'
     def __init__(self,vertex,edges,name=None,isdirected=False,
@@ -54,9 +64,6 @@ class Graph:
                 self.__out_degrees__[ver]=0
         # If you add a vertex, no correlated information between vertex is
         # added to the graph
-        #if self.autoupdate:
-        #    for ver in self.find_neighborhood_vertexes(vertex):
-        #        self.update(vertex=ver)
     def add_edge(self,edges):
         """ Add an edge to the graph and update the graph stats, if any.
         
@@ -91,15 +98,13 @@ class Graph:
                 else:
                     # End vertex exist, must increase the in_degree of end vertex
                     self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]+1})
-                #self.__degrees__.update({edge.start:self.__degrees__[edge.start]+1})
-                #self.__degrees__.update({edge.end:self.__degrees__[edge.end]+1})
-                #WORDS_INDEX.update({word:WORDS_INDEX[word]+ 1})
                 self.edges.append(edge)
         if self.autoupdate:
+            # Update the graph stats if case
             for ed in edges:
                 self.update(vertex=[ed.start],propagate=False)
                 self.update(vertex=[ed.end],propagate=False)
-            # Update the graph stats if case
+            
     def delete_vertex(self, vertex):
         """ Delete a vertex of the graph
         
@@ -118,6 +123,15 @@ class Graph:
         else:
             print("Vertex does not exist.")
     def delete_edge(self, edge):
+        """ Deletes an edge
+            
+            The in_degree and out_degree is updated.
+            
+            Parameters:
+            ===========
+            edge : Edge
+                The edge we want to delete.
+        """
         try:
             self.edges.remove(edge)
             self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]-1})
@@ -149,7 +163,7 @@ class Graph:
             starting : Boolean, optional
                 A boolean that indicates if we want the edges starting form the vertex
             ending : Boolean, optional
-                A boolean that indicates if we want the edges ending form the vertex        
+                A boolean that indicates if we want the edges ending in the vertex      
         """
         if not ver:
             return self.edges
@@ -206,13 +220,11 @@ class Graph:
                 A boolean that indicates if we want the edges ending form the vertex        
         """
         res=[]
-        for edge in self.get_edges(vertex,starting=starting,ending=ending):#,ending=entering):
+        for edge in self.get_edges(vertex,starting=starting,ending=ending):
             if not starting:
                 res.append(edge.start)
             elif not ending:
                 res.append(edge.end)
-        #for edge in self.get_edges(vertex):
-        #    res.append(edge.end)
         return res
     
     def find_vertex_by_name(self,name):
@@ -229,7 +241,7 @@ class Graph:
         # If there, vertex does not exist
         return None
     
-    def update(self,vertex=[],edge=[],propagate=False,exclude=[]):
+    def update(self,vertex=[],edge=[],propagate=False,exclude=[],back=False):
         """ Update funcion of the graph
         
             In some implementations it is needed to update the stats and data of
@@ -246,21 +258,17 @@ class Graph:
                 An indicator of propagation
             exclude : list, optional
                 A list of vertexes to omit
+            back : boolean, optional
+                True if you want to propagate back
         """
         for updater in self.updaters:
-            #ex=exclude
             for ver in vertex:
                 if ver not in exclude:
-                    updater(self,self.updaters[updater],[ver],ver,edge)
-                    if propagate or self.propagation:
-                        self.__propagate__(updater,[ver],ver,edge,exclude)
-            """
-            if vertex not in exclude:
-                updater(self,self.updaters[updater],[vertex],vertex,edge,exclude)
-                if propagate:
-                    self.__propagate__(updater,[vertex],vertex,edge,exclude=[])
-            """
-    def __propagate__(self,updater,start_vertex,vertex=None,edge=None,exclude=[]):
+                    updater(self,self.updaters[updater],[ver],ver,edge,back)
+                    # To evade loops and propagation on the start vertex
+                    if propagate:
+                        self.__propagate__(updater,[ver],ver,edge,exclude,back)
+    def __propagate__(self,updater,start_vertex,vertex=None,edge=None,exclude=[],back=False):
         """ Progragates the updater by all those vertex connected to the given one
         
             Parameters:
@@ -275,12 +283,14 @@ class Graph:
                 The edge we want to propagate
             exclude : list, optional
                 A list of vertex to be excluded
+            back : boolean, optional
+                True if you want to propagate back
         """
         for ver in self.find_neighborhood_vertexes(vertex,ending=False):
             if ver not in exclude:
-                updater(self,self.updaters[updater],start_vertex,ver,edge=None)
+                updater(self,self.updaters[updater],start_vertex,ver,edge=None,back=back)
                 exclude.append(ver)
-                self.__propagate__(updater,ver,start_vertex,exclude=exclude)
+                self.__propagate__(updater,ver,start_vertex,exclude=exclude,back=back)    
     def update_all(self,vertex=None):
         """ Update all the graph        
         """
@@ -314,8 +324,9 @@ class Graph:
             else:
                 res[ver]=None
         return res
-    def add_updater(self,key,vertex=None):
-        """ Add an updater to a vertex or all the vertex
+    def add_key_updater(self,key,vertex=None):
+        """ Add a kee updater to a vertex or all the vertex. This just add the
+            indicator of the updater, not the updater function.
         
             Parameters:
             ===========
@@ -333,5 +344,38 @@ class Graph:
         else:
             for ver in self.vertex:
                 ver.add_updater(key)
+    def add_func_updater(self, key, func):
+        """ Add a function updater for a key
+        
+            Parameters:
+            ===========
+            key : string
+                Name of the updater
+            func : function
+                Function linked to the key. The function must follow the followint format
+                    def f(graph,key,start_vertex,vertex,edge,back):
+                        # Your code
+                where
+                    graph : a Graph object you are working at.
+                    key : the key of the updater
+                    start_vertex : a vertex, represent the vertes from which you start to propagate
+                    vertex : a vertex in which you are working
+                    edge : an edge
+                    back : a boolean representing if you are working back or forward.
+                Your function must satisfy your implementation, all this is your responsability.
+                Also, must take care of loops, thats the objective of knowing the starting vertex.
+                An example:
+                
+                def p_back(graph,key,start_vertex,vertex=None,edge=None,back=False):
+                    if back:
+                        for v in graph.get_edges(vertex,starting=False):
+                            v.start.update_val(key,v.start.get_updater_val(key)+v.get_cost()*vertex.get_updater_val(key))
+                    else:
+                        for v in graph.get_edges(vertex,ending=False):
+                            v.end.update_val(key,v.end.get_updater_val(key)+v.get_cost()*vertex.get_updater_val(key))
+                
+                The function p_back is the back and forward propagation on a neuronal net.
+        """
+        self.updater[func]=key
     def __repr__(self):
         return "Graph (\n vertex="+str(self.get_vertexes())+",\n edges="+str(self.get_edges())+")"
