@@ -56,7 +56,7 @@ class Vertex(object):
         self.contain=contain
     def __repr__(self):
         return "Vertex (name='"+self.name+"',weight="+str(self.weight)+")"
-    def set_update_val(self,key=None,val=None):
+    def update_val(self,key=None,val=None):
         if key and self.updaters:
             self.updaters.update({key:val})
         else:
