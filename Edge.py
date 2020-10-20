@@ -43,6 +43,8 @@ class Edge:
         return self.updaters
     def __repr__(self):
         return "Edge ("+self.start.get_name()+","+self.end.get_name()+")"
-    def update(self,key=None,val=None):
+    def update_val(self,key=None,val=None):
         if key and self.updaters:
-            updaters.update({key:val})
+            self.updaters.update({key:val})
+        else:
+            self.updaters[key]=val
