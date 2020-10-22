@@ -31,8 +31,17 @@ class Edge:
     def __create_updaters__(self,updaters):
         for up in updaters:
             self.updaters[up]=0
+    def add_updater(self,key):
+        if key not in self.updaters.keys():
+            self.updaters[key]=0
+    def delete_updater(self,key):
+        if key in self.updaters.keys():
+            del self.updaters[key]
     def get_name(self):
         return self.name
+    def set_cost(self,cost):
+        assert cost, "You must specify a cost"
+        self.cost=cost
     def get_start(self):
         return self.start
     def get_end(self):
@@ -41,6 +50,12 @@ class Edge:
         return self.cost
     def get_updaters(self):
         return self.updaters
+    def get_updater_val(self,key):
+        try:
+            return self.updaters[key]
+        except:
+            self.add_updater(key)
+            return self.updaters[key]
     def __repr__(self):
         return "Edge ("+self.start.get_name()+","+self.end.get_name()+")"
     def update_val(self,key=None,val=None):
