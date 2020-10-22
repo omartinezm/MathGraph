@@ -1,4 +1,5 @@
-import Vertex, Edge
+from vertex import Vertex
+from edge import Edge
 class Graph:
     """ Graph class
     
@@ -40,7 +41,8 @@ class Graph:
         self.name=name
         self.__in_degrees__={}
         self.__out_degrees__={}
-        self.vertex=[]
+        #self.vertex=[]
+        self.vertex={} #<<<===
         self.add_vertex(vertex)
         self.edges=[]
         self.add_edge(edges)
@@ -59,7 +61,8 @@ class Graph:
         for ver in vertex:
             if not (ver in self.vertex):
                 # Vertex does not exist, must add
-                self.vertex.append(ver)
+                #self.vertex.append(ver)
+                self.vertex[ver.get_name()]=ver
                 self.__in_degrees__[ver]=0
                 self.__out_degrees__[ver]=0
         # If you add a vertex, no correlated information between vertex is
@@ -82,17 +85,17 @@ class Graph:
                     exist=True
                     break
             if(not exist):
-                if not (edge.start in self.vertex):
+                if not (edge.start.get_name() in self.vertex):
                     # Start vertex does not exist, must add
-                    self.vertex.append(edge.start)
+                    self.vertex[edge.start]=edge.start.get_name()
                     self.__in_degrees__[edge.start]=0
                     self.__out_degrees__[edge.start]=1
                 else:
                     # End vertex exist, must increase the out_degree of start vertex
                     self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]+1})
-                if not (edge.end in self.vertex):
+                if not (edge.end.get_name() in self.vertex):
                     # End vertex does not exist, must add
-                    self.vertex.append(edge.end)
+                    self.vertex[edge.end]=edge.end.get_name()
                     self.__in_degrees__[edge.end]=1
                     self.__out_degrees__[edge.end]=0
                 else:
@@ -148,7 +151,7 @@ class Graph:
         """ Returns the vertexes of the graph
         
         """
-        return self.vertex
+        return list(self.vertex.values())
     def get_edges(self,ver=None,starting=True, ending=True):
         """ Returns the edges of the graph.
         
@@ -190,8 +193,6 @@ class Graph:
             entering : Boolean, optional
                 A boolean that indicates if we want the edges ending form the vertex   
         """
-        #ext=len(self.find_neighborhood_vertexes(vertex,exiting=True))
-        #ent=len(self.find_neighborhood_vertexes(vertex,entering=True))
         if not vertex in self.vertex:
             return "Vertex does not exist"
         if not exiting and not entering:
@@ -235,13 +236,16 @@ class Graph:
             name : str,
                 The vertex name
         """
-        for ver in self.vertex:
-            if ver.get_name()==name:
-                return ver
+        #for ver in self.vertex:
+        #    if ver.get_name()==name:
+        #        return ver
         # If there, vertex does not exist
-        return None
+        try:
+            return self.vertex[name]
+        except:
+            assert False, "Vertex "+name+" does not exist"
     
-    def update(self,vertex=[],edge=[],propagate=False,exclude=[],back=False):
+    def update(self,vertex=[],edge=[],propagate=False,exclude=[],back=False,key=None):
         """ Update funcion of the graph
         
             In some implementations it is needed to update the stats and data of
@@ -261,13 +265,18 @@ class Graph:
             back : boolean, optional
                 True if you want to propagate back
         """
-        for updater in self.updaters:
+        if key:
+            keys=key
+        else:
+            keys=self.updaters
+        for updater in keys:
             for ver in vertex:
                 if ver not in exclude:
-                    updater(self,self.updaters[updater],[ver],ver,edge,back)
+                    self.updaters[updater](self,updater,[ver],ver,edge,back)
                     # To evade loops and propagation on the start vertex
+                    #ver.update_val(key=key,val=0)
                     if propagate:
-                        self.__propagate__(updater,[ver],ver,edge,exclude,back)
+                        self.__propagate__(self.updaters[updater],[ver],ver,edge,exclude,back)
     def __propagate__(self,updater,start_vertex,vertex=None,edge=None,exclude=[],back=False):
         """ Progragates the updater by all those vertex connected to the given one
         
@@ -314,11 +323,12 @@ class Graph:
         if not key:
             return "An updater key is needed!"
         
-        res={}        
+        res={} 
+        #print(self.vertex.values())
         for ver in self.vertex:
-            if ver.get_updaters():
-                if key in ver.get_updaters():
-                    res[ver]=ver.get_updaters()[key]
+            if (self.vertex[ver]).get_updaters():
+                if key in self.vertex[ver].get_updaters():
+                    res[ver]=self.vertex[ver].get_updaters()[key]
                 else:
                     res[ver]=None
             else:
