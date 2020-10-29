@@ -13,3 +13,5 @@ class Neuron(Vertex):
             self.updaters[up]=0
     def get_bias(self):
         return self.bias
+    def __repr__(self):
+        return "Neuron (name='"+self.name+", bias="+str(self.bias)+")"
