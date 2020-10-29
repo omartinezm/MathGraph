@@ -18,7 +18,6 @@ class Vertex(object):
     def __init__(self,name,weight=0,contain=None,updaters=None):
         self.weight=weight
         self.name=name
-        self.edges=[]
         self.contain=contain
         self.updaters={}
         if updaters:
@@ -46,8 +45,6 @@ class Vertex(object):
         except:
             self.add_updater(key)
             return self.updaters[key]
-    def add_edge(self,edge):
-        self.edges.append(edge)
     def get_name(self):
         return self.name
     def get_contain(self):
