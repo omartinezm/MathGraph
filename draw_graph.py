@@ -1,7 +1,9 @@
 import pyglet
 from pyglet import clock
 from pyglet.gl import *
+from pyglet import shapes
 from win32api import GetSystemMetrics
+from tqdm import tqdm,tqdm_gui
 
 ZOOM_IN_FACTOR = 1.2
 ZOOM_OUT_FACTOR = 1/ZOOM_IN_FACTOR
@@ -13,8 +15,8 @@ class DrawGraph(pyglet.window.Window):
         self.separation_x=x_sep
         self.separation_y=y_sep
         conf=Config(samples=4,depth_size=16)
-        super().__init__(min([self.separation_x*(nn.nlayers),GetSystemMetrics(0)]),
-                         min([self.separation_y*(max(nn.npl)+1),GetSystemMetrics(1)]),
+        super().__init__(min([self.separation_x*(self.nn.nlayers),GetSystemMetrics(0)]),
+                         min([self.separation_y*(max(self.nn.npl)+1),GetSystemMetrics(1)]),
                          config=conf,caption='Graph',resizable=False,
                          style=pyglet.window.Window.WINDOW_STYLE_DIALOG,
                          *args, **kwargs)
@@ -79,10 +81,11 @@ class DrawGraph(pyglet.window.Window):
         y_pos=self.separation_y
         total_n=sum(self.nn.npl)
         c=(0, 0, int(255*(1-acum_l/total_n)),255)
-        for l in tqdm(self.nn.npl,desc="Drawing graph"):
+        #for l in tqdm(self.nn.npl,desc="Drawing graph"):
+        for l in self.nn.npl:
             if acum_l!=0: c=(int(255*((acum_x)/self.nn.nlayers)), 0, int(255*(1-(acum_x)/self.nn.nlayers)), 255)
             for n in range(l):
-                self.vertex.append(pyglet.text.Label(self.nn.get_vertexes()[acum_l+n].get_name(),
+                self.vertex.append(pyglet.text.Label(self.nn.get_vertexes()[acum_l+n],
                                                 font_name='Arial',font_size=12,bold=True,
                                                 x=x_pos+(acum_x)*self.separation_x, y=y_pos+(n)*self.separation_y,
                                                 anchor_x='center', anchor_y='center',color=c,
