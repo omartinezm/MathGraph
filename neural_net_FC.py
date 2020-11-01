@@ -1,11 +1,12 @@
 from tqdm import tqdm,tqdm_gui
 from random import random
 from graph import Graph
-from vertex import Vertex
 from edge import Edge
 from neuron import Neuron
 
 class NeuralNetFC(Graph):
+    
+    kind = "NeuralNetFC"
     def __init__(self,name=None,npl=[2,2],updaters={},random=True):
         self.autoupdate=False # We first create the graph, then update it
         self.propagation=True
@@ -19,8 +20,8 @@ class NeuralNetFC(Graph):
         self.npl=npl
         self.vertex={}
         self.random=random
-        self.edges=[]
-        self.add_edge(self.__make_edges__(self.nlayers,npl))
+        self.edges=self.__make_edges__(self.nlayers,npl)
+        self.add_edge(self.edges)
         
     def __make_edges__(self,nlayers,npl):
         """ Make and add the edges of the network
@@ -60,8 +61,8 @@ class NeuralNetFC(Graph):
             tv=Neuron(name="L"+str(iden)+"_v"+str(i),bias=0)
             layer.append(tv)
             self.vertex[tv.get_name()]=tv
-            self.__in_degrees__[tv]=0
-            self.__out_degrees__[tv]=0
+            self.__in_degrees__[tv.get_name()]=0
+            self.__out_degrees__[tv.get_name()]=0
         return layer
     
     def update_neuron(self,name,key,value):
@@ -106,7 +107,7 @@ class NeuralNetFC(Graph):
             # From the first to last.
             for neu in tqdm(self.vertex,desc="Prop. on "+str(self.nlayers)+" layers"):
                 self.update([self.vertex[neu]],key=key)
-                if not "L"+str(len(self.npl)-1) in neu:
+                if not ("L"+str(len(self.npl)-1) in neu):
                     #print(neu)
                     for k in key:
                         self.vertex[neu].update_val(k,0)
@@ -157,3 +158,5 @@ class NeuralNetFC(Graph):
         return res
     def __repr__(self):
         return "NeuralNet_FC (\n   \033[1m config \033[0;0m="+str(self.npl)+"\n   \033[1m vertex \033[0;0m="+str(self.get_vertexes())+",\n   \033[1m edges \033[0;0m="+str(self.get_edges())+")"
+   
+    
