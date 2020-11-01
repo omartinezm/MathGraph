@@ -1,5 +1,7 @@
 from vertex import Vertex
 from edge import Edge
+from draw_graph import DrawGraph
+
 class Graph:
     """ Graph class
     
@@ -61,10 +63,9 @@ class Graph:
         for ver in vertex:
             if not (ver in self.vertex):
                 # Vertex does not exist, must add
-                #self.vertex.append(ver)
                 self.vertex[ver]=ver.get_name()
-                self.__in_degrees__[ver]=0
-                self.__out_degrees__[ver]=0
+                self.__in_degrees__[ver.get_name()]=0
+                self.__out_degrees__[ver.get_name()]=0
         # If you add a vertex, no correlated information between vertex is
         # added to the graph
     def add_edge(self,edges):
@@ -85,20 +86,20 @@ class Graph:
                     exist=True
                     break
             if(not exist):
-                if not (edge.start.get_name() in self.vertex):
+                if not (edge.start in self.vertex):
                     # Start vertex does not exist, must add
                     self.add_vertex([edge.start])
-                    self.__out_degrees__[edge.start]=1
+                    self.__out_degrees__[edge.start.get_name()]=1
                 else:
-                    # End vertex exist, must increase the out_degree of start vertex
-                    self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]+1})
-                if not (edge.end.get_name() in self.vertex):
+                    # Start vertex exist, must increase the out_degree of start vertex
+                    self.__out_degrees__.update({edge.start.get_name():self.__out_degrees__[edge.start.get_name()]+1})
+                if not (edge.end in self.vertex):
                     # End vertex does not exist, must add
                     self.add_vertex([edge.end])
-                    self.__in_degrees__[edge.end]=1
+                    self.__in_degrees__[edge.end.get_name()]=1
                 else:
                     # End vertex exist, must increase the in_degree of end vertex
-                    self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]+1})
+                    self.__in_degrees__.update({edge.end.get_name():self.__in_degrees__[edge.end.get_name()]+1})
                 self.edges.append(edge)
         if self.autoupdate:
             # Update the graph stats if case
@@ -140,8 +141,8 @@ class Graph:
         """
         try:
             self.edges.remove(edge)
-            self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]-1})
-            self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]-1})
+            self.__in_degrees__.update({edge.end.name:self.__in_degrees__[edge.end]-1})
+            self.__out_degrees__.update({edge.start.name:self.__out_degrees__[edge.start]-1})
         except:
             print("Edge does not exist.")
             
@@ -189,14 +190,14 @@ class Graph:
             
             Parameters:
             ===========
-            vertex : Vertex,
-                The vertex we are studying
+            vertex : str,
+                The name of the vertex we are studying
             exiting : Boolean, optional
                 A boolean that indicates if we want the edges starting form the vertex
             entering : Boolean, optional
                 A boolean that indicates if we want the edges ending form the vertex   
         """
-        if not vertex in self.vertex:
+        if not vertex in self.vertex.keys():
             return "Vertex does not exist"
         if not exiting and not entering:
             # Total degree
@@ -391,5 +392,12 @@ class Graph:
                 The function p_back is the back and forward propagation on a neuronal net.
         """
         self.updaters[key]=func
+    def draw(self,*arg,**kwargs):
+        """ Draw a graph using the DrawGraph class
+            
+        """
+        dg=DrawGraph(self,*arg,**kwargs)
+        dg.run()
+        
     def __repr__(self):
         return "Graph (\n vertex="+str(self.get_vertexes())+",\n edges="+str(self.get_edges())+")"
