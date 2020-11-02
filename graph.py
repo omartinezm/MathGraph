@@ -1,6 +1,7 @@
 from vertex import Vertex
 from edge import Edge
 from draw_graph import DrawGraph
+import warnings
 
 class Graph:
     """ Graph class
@@ -63,9 +64,11 @@ class Graph:
         for ver in vertex:
             if not (ver in self.vertex):
                 # Vertex does not exist, must add
+                if self.find_vertex_by_name(ver.get_name()):
+                    warnings.warn("Already exist a vertex with the name '"+str(ver.get_name())+"'")
                 self.vertex[ver]=ver.get_name()
-                self.__in_degrees__[ver.get_name()]=0
-                self.__out_degrees__[ver.get_name()]=0
+                self.__in_degrees__[ver]=0
+                self.__out_degrees__[ver]=0
         # If you add a vertex, no correlated information between vertex is
         # added to the graph
     def add_edge(self,edges):
@@ -89,17 +92,17 @@ class Graph:
                 if not (edge.start in self.vertex):
                     # Start vertex does not exist, must add
                     self.add_vertex([edge.start])
-                    self.__out_degrees__[edge.start.get_name()]=1
+                    self.__out_degrees__[edge.start]=1
                 else:
                     # Start vertex exist, must increase the out_degree of start vertex
-                    self.__out_degrees__.update({edge.start.get_name():self.__out_degrees__[edge.start.get_name()]+1})
+                    self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]+1})
                 if not (edge.end in self.vertex):
                     # End vertex does not exist, must add
                     self.add_vertex([edge.end])
-                    self.__in_degrees__[edge.end.get_name()]=1
+                    self.__in_degrees__[edge.end]=1
                 else:
                     # End vertex exist, must increase the in_degree of end vertex
-                    self.__in_degrees__.update({edge.end.get_name():self.__in_degrees__[edge.end.get_name()]+1})
+                    self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]+1})
                 self.edges.append(edge)
         if self.autoupdate:
             # Update the graph stats if case
@@ -126,7 +129,9 @@ class Graph:
         if vertex in self.vertex:
             for edge in self.get_edges(vertex):
                 self.delete_edge(edge)
-            self.vertex.remove(vertex)
+            del self.vertex[vertex]
+            del self.__in_degrees__[vertex]
+            del self.__out_degrees__[vertex]
         else:
             print("Vertex does not exist.")
     def delete_edge(self, edge):
@@ -139,12 +144,12 @@ class Graph:
             edge : Edge
                 The edge we want to delete.
         """
-        try:
-            self.edges.remove(edge)
-            self.__in_degrees__.update({edge.end.name:self.__in_degrees__[edge.end]-1})
-            self.__out_degrees__.update({edge.start.name:self.__out_degrees__[edge.start]-1})
-        except:
-            print("Edge does not exist.")
+        #try:
+        self.__in_degrees__.update({edge.end.name:self.__in_degrees__[edge.end.name]-1})
+        self.__out_degrees__.update({edge.start.name:self.__out_degrees__[edge.start.name]-1})
+        self.edges.remove(edge)
+        #except:
+        #print("Edge does not exist.")
             
     def get_name(self):
         """ Returns the name of the graph
@@ -197,17 +202,19 @@ class Graph:
             entering : Boolean, optional
                 A boolean that indicates if we want the edges ending form the vertex   
         """
-        if not vertex in self.vertex.keys():
+        #if not vertex in self.vertex.keys():
+        ver=self.find_vertex_by_name(vertex)
+        if not ver:
             return "Vertex does not exist"
         if not exiting and not entering:
             # Total degree
-            return self.__out_degrees__[vertex]-self.__in_degrees__[vertex]
+            return self.__out_degrees__[ver]-self.__in_degrees__[ver]
         elif not entering:
             # In degree
-            return self.__in_degrees__[vertex]
+            return self.__in_degrees__[ver]
         else:
             # Out degree
-            return self.__out_degrees__[vertex]
+            return self.__out_degrees__[ver]
         
     def find_neighborhood_vertexes(self,vertex,starting=True,ending=True):
         """ Function that find all the neighborhood vertexes
@@ -226,9 +233,9 @@ class Graph:
         """
         res=[]
         for edge in self.get_edges(vertex,starting=starting,ending=ending):
-            if not starting:
+            if starting:
                 res.append(edge.start)
-            elif not ending:
+            elif ending:
                 res.append(edge.end)
         return res
     
@@ -240,15 +247,11 @@ class Graph:
             name : str,
                 The vertex name
         """
-        #for ver in self.vertex:
-        #    if ver.get_name()==name:
-        #        return ver
-        # If there, vertex does not exist
-        try:
-            return self.vertex[name]
-        except:
-            assert False, "Vertex "+name+" does not exist"
-    
+        for key,val in self.vertex.items():
+            if val==name:
+                return key
+        #return "Vertex does not exist"
+
     def update(self,vertex=[],edge=[],propagate=False,exclude=[],back=False,key=None):
         """ Update funcion of the graph
         

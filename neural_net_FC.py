@@ -8,13 +8,15 @@ class NeuralNetFC(Graph):
     
     kind = "NeuralNetFC"
     def __init__(self,name=None,npl=[2,2],updaters={},random=True):
-        self.autoupdate=False # We first create the graph, then update it
-        self.propagation=True
-        self.isdirected=False
-        self.name=name
-        self.__in_degrees__={}
-        self.__out_degrees__={}
-        self.updaters=updaters
+        super().__init__(vertex=[],edges=[],name=name,isdirected=False,autoupdate=False,
+                updaters=updaters,propagation=True)
+        #self.autoupdate=False # We first create the graph, then update it
+        #self.propagation=True
+        #self.isdirected=False
+        #self.name=name
+        #self.__in_degrees__={}
+        #self.__out_degrees__={}
+        #self.updaters=updaters
         
         self.nlayers=len(npl)
         self.npl=npl

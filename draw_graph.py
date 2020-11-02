@@ -2,7 +2,6 @@ import pyglet
 from pyglet import clock
 from pyglet.gl import *
 from pyglet import shapes
-from win32api import GetSystemMetrics
 from tqdm import tqdm,tqdm_gui
 from math import cos, sin, pi
 
@@ -17,17 +16,17 @@ class DrawGraph(pyglet.window.Window):
         self.separation_y=y_sep
         conf=Config(samples=4,depth_size=16)
         if(self.graph.kind=="NeuralNetFC"):
-            w=self.separation_x*(self.graph.nlayers)
+            w=self.separation_x*(self.graph.nlayers+1)
             h=self.separation_y*(max(self.graph.npl)+1)
         else:
             w=700
             h=700
-        super().__init__(min([w,1000]),
-                         min([h,700]),
+        super().__init__(min([w,1300]),
+                         min([h,900]),
                          config=conf,caption='Graph',resizable=False,
                          style=pyglet.window.Window.WINDOW_STYLE_DIALOG,
                          *args, **kwargs)
-        self.set_location(30,30)
+        #self.set_location(30,30)
         self.main_batch = pyglet.graphics.Batch()
 
         self.left=0
@@ -85,16 +84,19 @@ class DrawGraph(pyglet.window.Window):
         if self.graph.kind=="NeuralNetFC":
             acum_l=0
             acum_x=0
-            x_pos=self.separation_x/2
-            y_pos=self.separation_y
             total_n=sum(self.graph.npl)
             c=(0, 0, int(255*(1-acum_l/total_n)),255)
             for l in self.graph.npl:
                 if acum_l!=0: c=(int(255*((acum_x)/self.graph.nlayers)), 0, int(255*(1-(acum_x)/self.graph.nlayers)), 255)
+                x_pos=self.separation_x
+                #y_pos=(self.separation_y-l)/2
+                y_pos=(self.height-(l-1)*self.separation_y)/2
+                y_step=self.separation_y
                 for n in range(l):
                     self.vertex.append(pyglet.text.Label(self.graph.get_vertexes()[acum_l+n],
                                                 font_name='Arial',font_size=12,bold=True,
-                                                x=x_pos+(acum_x)*self.separation_x, y=y_pos+(n)*self.separation_y,
+                                                x=x_pos+(acum_x)*self.separation_x,
+                                                y=y_pos+(n)*y_step,
                                                 anchor_x='center', anchor_y='center',color=c,
                                                 batch=self.batch,group=self.foreground))
                     self.circles.append(pyglet.shapes.Circle(x=self.vertex[-1].x,
@@ -109,7 +111,7 @@ class DrawGraph(pyglet.window.Window):
                                              width=5, color=c[:-1], batch=self.batch,group=self.background_lines))
                 acum_l+=l
                 acum_x+=1
-        else:
+        elif self.graph.vertex:
             angle=0
             theta=2*pi/(len(self.graph.vertex))
             self.circles={}
@@ -120,16 +122,16 @@ class DrawGraph(pyglet.window.Window):
                                   y=self.height/2+(self.height/2-100)*sin(angle),
                                   anchor_x='center', anchor_y='center',color=(0, 0, 255,255),
                                   batch=self.batch,group=self.foreground)          
-                self.circles[ver.get_name()]=pyglet.shapes.Circle(x=self.width/2+(self.width/2-100)*cos(angle),
+                self.circles[ver]=pyglet.shapes.Circle(x=self.width/2+(self.width/2-100)*cos(angle),
                                                          y=self.height/2+(self.height/2-100)*sin(angle),
                                                          radius=25,color=(255, 255, 255),
                                                          batch=self.batch,group=self.background)
                 angle+=theta
             for edge in self.graph.edges:
-                self.lines.append(shapes.Line(self.circles[edge.start.get_name()].x,
-                                              self.circles[edge.start.get_name()].y,
-                                              self.circles[edge.end.get_name()].x,
-                                              self.circles[edge.end.get_name()].y, width=5, color=(255, 55, 55),
+                self.lines.append(shapes.Line(self.circles[edge.start].x,
+                                              self.circles[edge.start].y,
+                                              self.circles[edge.end].x,
+                                              self.circles[edge.end].y, width=5, color=(255, 55, 55),
                                               batch=self.batch,group=self.background_lines))
                 
     def on_draw(self):
