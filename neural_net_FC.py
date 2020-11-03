@@ -10,14 +10,7 @@ class NeuralNetFC(Graph):
     def __init__(self,name=None,npl=[2,2],updaters={},random=True):
         super().__init__(vertex=[],edges=[],name=name,isdirected=False,autoupdate=False,
                 updaters=updaters,propagation=True)
-        #self.autoupdate=False # We first create the graph, then update it
-        #self.propagation=True
-        #self.isdirected=False
-        #self.name=name
-        #self.__in_degrees__={}
-        #self.__out_degrees__={}
-        #self.updaters=updaters
-        
+       
         self.nlayers=len(npl)
         self.npl=npl
         self.vertex={}
@@ -110,7 +103,6 @@ class NeuralNetFC(Graph):
             for neu in tqdm(self.vertex,desc="Prop. on "+str(self.nlayers)+" layers"):
                 self.update([self.vertex[neu]],key=key)
                 if not ("L"+str(len(self.npl)-1) in neu):
-                    #print(neu)
                     for k in key:
                         self.vertex[neu].update_val(k,0)
     def train(self,train_batch=[],epoch=1):
@@ -129,7 +121,6 @@ class NeuralNetFC(Graph):
         print(predicted)
         res=[]
         for (pred,expec) in zip(predicted,y):
-            #print(pred,expec)
             rt=[]
             for (p1,e1) in zip(pred,expec):
                 rt.append(p1-e1)
@@ -147,7 +138,6 @@ class NeuralNetFC(Graph):
         """
         res=[]
         for vec in data:
-            #print(vec)
             if len(vec)==self.npl[0]:
                 for i in range(self.npl[0]):
                     self.update_neuron("L0_v"+str(i),key,vec[i])

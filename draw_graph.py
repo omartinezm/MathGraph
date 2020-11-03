@@ -26,7 +26,6 @@ class DrawGraph(pyglet.window.Window):
                          config=conf,caption='Graph',resizable=False,
                          style=pyglet.window.Window.WINDOW_STYLE_DIALOG,
                          *args, **kwargs)
-        #self.set_location(30,30)
         self.main_batch = pyglet.graphics.Batch()
 
         self.left=0
@@ -89,7 +88,6 @@ class DrawGraph(pyglet.window.Window):
             for l in self.graph.npl:
                 if acum_l!=0: c=(int(255*((acum_x)/self.graph.nlayers)), 0, int(255*(1-(acum_x)/self.graph.nlayers)), 255)
                 x_pos=self.separation_x
-                #y_pos=(self.separation_y-l)/2
                 y_pos=(self.height-(l-1)*self.separation_y)/2
                 y_step=self.separation_y
                 for n in range(l):

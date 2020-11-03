@@ -107,7 +107,6 @@ class Graph:
         if self.autoupdate:
             # Update the graph stats if case
             for ed in edges:
-                #self.update(vertex=[ed.start],propagate=False)
                 self.update(vertex=[ed.end],propagate=False)
     def set_vertex_updater_val(self, vertex, key, val):
         vertex.update_val(key,val)
@@ -144,12 +143,9 @@ class Graph:
             edge : Edge
                 The edge we want to delete.
         """
-        #try:
         self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]-1})
         self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]-1})
         self.edges.remove(edge)
-        #except:
-        #print("Edge does not exist.")
             
     def get_name(self):
         """ Returns the name of the graph
@@ -202,7 +198,6 @@ class Graph:
             entering : Boolean, optional
                 A boolean that indicates if we want the edges ending form the vertex   
         """
-        #if not vertex in self.vertex.keys():
         ver=self.find_vertex_by_name(vertex)
         if not ver:
             return "Vertex does not exist"
@@ -250,7 +245,6 @@ class Graph:
         for key,val in self.vertex.items():
             if val==name:
                 return key
-        #return "Vertex does not exist"
 
     def update(self,vertex=[],edge=[],propagate=False,exclude=[],back=False,key=None):
         """ Update funcion of the graph
@@ -282,7 +276,6 @@ class Graph:
                     self.updaters[updater](self,updater,[ver],ver,edge,back)
                     # To evade loops and propagation on the start vertex
                     if propagate:
-                        #print("acá")
                         exclude=[ver]
                         self.__propagate__(updater,[ver],ver,edge,exclude,back)
     def __propagate__(self,updater,start_vertex,vertex=None,edge=None,exclude=[],back=False):
@@ -332,7 +325,6 @@ class Graph:
             return "An updater key is needed!"
         
         res={} 
-        #print(self.vertex.values())
         for ver in self.vertex:
             if ver.get_updaters():
                 if key in ver.get_updaters():

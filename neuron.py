@@ -2,10 +2,9 @@ from vertex import Vertex
 
 class Neuron(Vertex):
     def __init__(self,name,updaters=None,bias=0):
-        self.name=name
-        self.weight=0
+        super().__init__(name=name,weight=0,updaters=updaters)
         self.bias=bias
-        self.updaters={}
+        #self.updaters={}
         if updaters:
             self.__create_updaters__(updaters)
     def __create_updaters__(self,updaters):
