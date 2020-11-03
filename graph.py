@@ -145,8 +145,8 @@ class Graph:
                 The edge we want to delete.
         """
         #try:
-        self.__in_degrees__.update({edge.end.name:self.__in_degrees__[edge.end.name]-1})
-        self.__out_degrees__.update({edge.start.name:self.__out_degrees__[edge.start.name]-1})
+        self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]-1})
+        self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]-1})
         self.edges.remove(edge)
         #except:
         #print("Edge does not exist.")
