@@ -82,33 +82,63 @@ class Graph:
                 A list of edges to add        
         """
         for edge in edges:
-            exist=False
-            for ed in self.get_edges(edge.start):
-                if ed.start==edge.start and ed.end==edge.end:
-                    # The edge already exist!
-                    exist=True
-                    break
+            exist=self.__exist_edge__(edge)
             if(not exist):
-                if not (edge.start in self.vertex):
-                    # Start vertex does not exist, must add
-                    self.add_vertex([edge.start])
-                    self.__out_degrees__[edge.start]=1
-                else:
-                    # Start vertex exist, must increase the out_degree of start vertex
-                    self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]+1})
-                if not (edge.end in self.vertex):
-                    # End vertex does not exist, must add
-                    self.add_vertex([edge.end])
-                    self.__in_degrees__[edge.end]=1
-                else:
-                    # End vertex exist, must increase the in_degree of end vertex
-                    self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]+1})
+                self.__add_new_edge__(edge)
                 self.edges.append(edge)
         if self.autoupdate:
             # Update the graph stats if case
             for ed in edges:
                 self.update(vertex=[ed.end],propagate=False)
+    def __exist_edge__(self,edge):
+        """ Verify if the edge exists
+            
+            Parameters:
+            ===========
+            edge : Edge
+                The edge we want to verify
+        """
+        exist=False
+        for ed in self.get_edges(edge.start):
+            if ed.start==edge.start and ed.end==edge.end:
+                # The edge already exist!
+                exist=True
+                break
+        return exist
+    def __add_new_edge__(self,edge):
+        """ Add a new edge
+        
+            Parameters:
+            ===========
+            edge : Edge
+                The edge we want to add. This edge must be new.
+        """
+        if not (edge.start in self.vertex):
+            # Start vertex does not exist, must add
+            self.add_vertex([edge.start])
+            self.__out_degrees__[edge.start]=1
+        else:
+            # Start vertex exist, must increase the out_degree of start vertex
+            self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]+1})
+        if not (edge.end in self.vertex):
+            # End vertex does not exist, must add
+            self.add_vertex([edge.end])
+            self.__in_degrees__[edge.end]=1
+        else:
+            # End vertex exist, must increase the in_degree of end vertex
+            self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]+1})
     def set_vertex_updater_val(self, vertex, key, val):
+        """ Set the value of the updater at the given vertex
+            
+            Parameters:
+            ===========
+            vertex : Vertex
+                The vertex we want to update the value
+            key : str
+                The name of the updater
+            vale : double
+                The new value
+        """
         vertex.update_val(key,val)
         if self.autoupdate:
             for ver in self.find_neighborhood_vertexes(vertex,ending=False):
@@ -143,9 +173,13 @@ class Graph:
             edge : Edge
                 The edge we want to delete.
         """
-        self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]-1})
-        self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]-1})
-        self.edges.remove(edge)
+        if edge in self.edges:
+            self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]-1})
+            self.__out_degrees__.update({edge.start:self.__out_degrees__[edge.start]-1})
+            self.edges.remove(edge)
+            return True
+        else:
+            return False
             
     def get_name(self):
         """ Returns the name of the graph
