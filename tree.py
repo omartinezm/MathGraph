@@ -78,10 +78,8 @@ class Tree(Graph):
         if(deep==0):
             text=v.get_name()
         elif(deep>1):
-            #text="\\"+"  "*(deep-1)+"\-"+v.get_name()+"    [deep="+str(deep)+"]"
             text="  "*(deep)+"\-"+v.get_name()+"    [deep="+str(deep)+"]"
         else:
-            #text="\\"+"  "*(deep-1)+"-"+v.get_name()+"    [deep="+str(deep)+"]"
             text="\\"*(deep)+"-"+v.get_name()+"    [deep="+str(deep)+"]"
         print(text)
         for f in v.get_leafs():
