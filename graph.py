@@ -37,7 +37,8 @@ class Graph:
     """
     kind = 'graph'
     def __init__(self,vertex=[],edges=[],name=None,isdirected=False,
-                 autoupdate=False,updaters={},propagation=False):
+                 autoupdate=False,updaters={},propagation=False,
+                 ):
         self.autoupdate=False # We first create the graph, then update it
         self.propagation=propagation
         self.isdirected=isdirected

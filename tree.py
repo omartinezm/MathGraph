@@ -3,12 +3,14 @@ import warnings
 
 class Tree(Graph):
     kind = 'Tree'
+    """ Tree class
+
+        This class models a tree graph. It is a subclass of the graph class.
+    """
     def __init__(self,vertex=[],edges=[],name=None,updaters=None):
         super().__init__(name=name,updaters=updaters)
-        self.vertex={}
-        self.edges=[]
         self.add_edge(edges)
-    def add_edge(self,edges):
+    def add_edge(self,edgs):
         """ Add an edge to the graph and update the graph stats, if any.
         
             If the vertex does not exist in the graph, it is added
@@ -18,17 +20,17 @@ class Tree(Graph):
             edges: list
                 A list of edges to add        
         """
-        for edge in edges:
+        for edge in edgs:
             exist=self.__exist_edge__(edge)
             if(not exist):
                 if edge.end.parent:
                     return "This edge is not admisible on a tree. The vertex "+edge.end.get_name()+" already have a parent"
                 # If we are in this part of code then the edge is admisible.
                 self.__add_new_edge__(edge)
-                self.edges.append(edge)
                 # New part on the graph, it set the parent and leafs
                 edge.end.set_parent(edge.start)
-                edge.start.add_leafs([edge.end])
+                edge.start.add_leafs(edge.end)
+                self.edges.append(edge)
         if self.autoupdate:
             # Update the graph stats if case
             for ed in edges:
@@ -49,3 +51,40 @@ class Tree(Graph):
             return True
         else:
             return False
+    def find_root(self):
+        """ Find the root of the tree
+        """
+        v=self.get_vertexes()[0]
+        while(True):
+            if v.get_parent():
+                v=v.get_parent()
+            else:
+                break
+        return v
+
+    def draw_console(self,v=None,deep=0):
+        """ Draw a representation of the tree on the console
+            
+            Parameters:
+            ===========
+            v : vertex
+                The vertex from which we start the graph. You can
+                draw all he graph or from an specific vertex.
+            deep : int >0
+                The deep of the vertex. Works a as tabulation.
+        """
+        if not v:
+            v=self.find_root()
+        if(deep==0):
+            text=v.get_name()
+        elif(deep>1):
+            #text="\\"+"  "*(deep-1)+"\-"+v.get_name()+"    [deep="+str(deep)+"]"
+            text="  "*(deep)+"\-"+v.get_name()+"    [deep="+str(deep)+"]"
+        else:
+            #text="\\"+"  "*(deep-1)+"-"+v.get_name()+"    [deep="+str(deep)+"]"
+            text="\\"*(deep)+"-"+v.get_name()+"    [deep="+str(deep)+"]"
+        print(text)
+        for f in v.get_leafs():
+            deep+=1
+            self.draw_console(f,deep)
+            deep-=1
