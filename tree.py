@@ -10,6 +10,7 @@ class Tree(Graph):
     def __init__(self,vertex=[],edges=[],name=None,updaters=None):
         super().__init__(name=name,updaters=updaters)
         self.add_edge(edges)
+        self.height=self.get_height()
     def add_edge(self,edgs):
         """ Add an edge to the graph and update the graph stats, if any.
         
@@ -61,6 +62,20 @@ class Tree(Graph):
             else:
                 break
         return v
+
+    def get_height(self):
+        """ Find the height of the tree
+        """
+        start=self.find_root()
+        leafs=start.get_leafs()
+        h=0
+        while(leafs):
+            h+=1
+            new=[]
+            for leaf in leafs:
+                new.extend(leaf.get_leafs())
+            leafs=new
+        return h
 
     def draw_console(self,v=None,deep=0):
         """ Draw a representation of the tree on the console

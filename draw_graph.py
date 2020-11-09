@@ -109,29 +109,57 @@ class DrawGraph(pyglet.window.Window):
                                              width=5, color=c[:-1], batch=self.batch,group=self.background_lines))
                 acum_l+=l
                 acum_x+=1
+        elif self.graph.kind=="Tree":
+            vid=[self.graph.find_root()]
+            y_sep=(self.height-100)/self.graph.height
+            self.circles={}
+            nv=0
+            while(vid):
+                x_sep=self.width/(len(vid)+1)
+                nh=0
+                for v in vid:
+                    self.__draw_vertex__(v,x_sep+x_sep*(nh),self.height-50-(y_sep)*nv,color_l=(0, 0, 255,255),color_c=(255, 255, 255))
+                    nh+=1
+                new=[]
+                for leaf in vid:
+                    new.extend(leaf.get_leafs())
+                vid=new
+                nv+=1
+            for edge in self.graph.edges:
+                self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+
         elif self.graph.vertex:
             angle=0
             theta=2*pi/(len(self.graph.vertex))
             self.circles={}
-            for ver in self.graph.vertex:
-                pyglet.text.Label(ver.get_name(),
-                                  font_name='Arial',font_size=12,bold=False,
-                                  x=self.width/2+(self.width/2-100)*cos(angle),
-                                  y=self.height/2+(self.height/2-100)*sin(angle),
-                                  anchor_x='center', anchor_y='center',color=(0, 0, 255,255),
-                                  batch=self.batch,group=self.foreground)          
-                self.circles[ver]=pyglet.shapes.Circle(x=self.width/2+(self.width/2-100)*cos(angle),
-                                                         y=self.height/2+(self.height/2-100)*sin(angle),
-                                                         radius=25,color=(255, 255, 255),
-                                                         batch=self.batch,group=self.background)
+            for v in self.graph.vertex:
+                self.__draw_vertex__(v,
+                        self.width/2+(self.width/2-100)*cos(angle),
+                        self.height/2+(self.height/2-100)*sin(angle),color_l=(0, 0, 255,255),color_c=(255, 255, 255))
                 angle+=theta
             for edge in self.graph.edges:
-                self.lines.append(shapes.Line(self.circles[edge.start].x,
-                                              self.circles[edge.start].y,
-                                              self.circles[edge.end].x,
-                                              self.circles[edge.end].y, width=5, color=(255, 55, 55),
-                                              batch=self.batch,group=self.background_lines))
-                
+                self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+               
+    def __draw_vertex__(self,v,px,py,color_l,color_c):
+        pyglet.text.Label(v.get_name(),
+              font_name='Arial',font_size=12,bold=False,
+              x=px,
+              y=py,
+              anchor_x='center', anchor_y='center',color=color_l,
+              batch=self.batch,group=self.foreground)          
+        self.circles[v]=pyglet.shapes.Circle(x=px,
+                y=py,
+                radius=25,
+                color=color_c,
+                batch=self.batch,group=self.background)
+
+    def __draw_line__(self,start,end,color_l):
+        self.lines.append(shapes.Line(self.circles[start].x,
+            self.circles[start].y,
+            self.circles[end].x,
+            self.circles[end].y, width=5, color=color_l,
+            batch=self.batch,group=self.background_lines))
+
     def on_draw(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
