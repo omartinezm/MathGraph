@@ -122,7 +122,10 @@ class DrawGraph(pyglet.window.Window):
                     nh+=1
                 new=[]
                 for leaf in vid:
-                    new.extend(leaf.get_leafs())
+                    if self.graph.binary:
+                        new.extend(leaf.get_leafs().values())
+                    else:
+                        new.extend(leaf.get_leafs())
                 vid=new
                 nv+=1
             for edge in self.graph.edges:
@@ -142,7 +145,7 @@ class DrawGraph(pyglet.window.Window):
                
     def __draw_vertex__(self,v,px,py,color_l,color_c):
         pyglet.text.Label(v.get_name(),
-              font_name='Arial',font_size=12,bold=False,
+              font_size=12,bold=False,font_name='Arial',
               x=px,
               y=py,
               anchor_x='center', anchor_y='center',color=color_l,

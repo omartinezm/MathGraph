@@ -7,19 +7,20 @@ class Tree(Graph):
 
         This class models a tree graph. It is a subclass of the graph class.
     """
-    def __init__(self,vertex=[],edges=[],name=None,updaters=None):
+    def __init__(self,vertex=[],edges=[],binary=False,name=None,updaters=None):
         super().__init__(name=name,updaters=updaters)
+        self.binary=binary
         self.add_edge(edges)
         self.height=self.get_height()
     def add_edge(self,edgs):
         """ Add an edge to the graph and update the graph stats, if any.
-        
+
             If the vertex does not exist in the graph, it is added
-            
+
             Parameters:
             ===========
             edges: list
-                A list of edges to add        
+                A list of edges to add
         """
         for edge in edgs:
             exist=self.__exist_edge__(edge)
@@ -28,9 +29,13 @@ class Tree(Graph):
                     return "This edge is not admisible on a tree. The vertex "+edge.end.get_name()+" already have a parent"
                 # If we are in this part of code then the edge is admisible.
                 self.__add_new_edge__(edge)
+                # If is a binary graph we set the left and right leaf
+                if edge.direction:
+                    edge.start.add_leafs(edge.end,edge.direction)
+                else:
+                    edge.start.add_leafs(edge.end)
                 # New part on the graph, it set the parent and leafs
                 edge.end.set_parent(edge.start)
-                edge.start.add_leafs(edge.end)
                 self.edges.append(edge)
         if self.autoupdate:
             # Update the graph stats if case
@@ -38,9 +43,9 @@ class Tree(Graph):
                 self.update(vertex=[ed.end],propagate=False)
     def delete_edge(self, edge):
         """ Deletes an edge
-            
+
             The in_degree and out_degree is updated.
-            
+
             Parameters:
             ===========
             edge : Edge
@@ -67,19 +72,25 @@ class Tree(Graph):
         """ Find the height of the tree
         """
         start=self.find_root()
-        leafs=start.get_leafs()
+        if self.binary:
+            leafs=start.get_leafs().values()
+        else:
+            leafs=start.get_leafs()
         h=0
         while(leafs):
             h+=1
             new=[]
             for leaf in leafs:
-                new.extend(leaf.get_leafs())
+                if self.binary:
+                    new.extend(leaf.leafs.values())
+                else:
+                    new.extend(leaf.get_leafs())
             leafs=new
         return h
 
     def draw_console(self,v=None,deep=0):
         """ Draw a representation of the tree on the console
-            
+
             Parameters:
             ===========
             v : vertex
@@ -97,7 +108,14 @@ class Tree(Graph):
         else:
             text="\\"*(deep)+"-"+v.get_name()+"    [deep="+str(deep)+"]"
         print(text)
-        for f in v.get_leafs():
-            deep+=1
-            self.draw_console(f,deep)
-            deep-=1
+        if self.binary:
+            for f in v.get_leafs().values():
+                deep+=1
+                self.draw_console(f,deep)
+                deep-=1
+        else:
+            for f in v.get_leafs():
+                deep+=1
+                self.draw_console(f,deep)
+                deep-=1
+
