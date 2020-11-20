@@ -10,7 +10,7 @@ class BinTreeVertex(TreeVertex):
         parent : TreeVertex, optional
             Parent of the vertex
     """
-    def __init__(self,name,parent=None,left=None,right=None,updaters=None):
+    def __init__(self,name,parent=None,updaters=None):
         """ We set the parent and the updaters.
         """
         super().__init__(name,updaters)
@@ -18,11 +18,24 @@ class BinTreeVertex(TreeVertex):
         self.leafs={}
 
     def set_left(self,left):
+        """ Set the left leaf
+        """
         self.leafs["LEFT"]=left
-        self.left=left
 
     def set_right(self,right):
+        """ Set the right leaf
+        """
         self.leafs["RIGHT"]=right
+
+    def get_left_leaf(self):
+        """ Returns the left leaf
+        """
+        return self.leafs["LEFT"]
+    
+    def get_right_leaf(self):
+        """ Returns the rigth leaf
+        """
+        return self.leafs["RIGHT"]
 
     def add_leafs(self,leaf,direction):
         """ Add a leaf to the vertex
