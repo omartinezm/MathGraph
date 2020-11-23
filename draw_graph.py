@@ -92,7 +92,7 @@ class DrawGraph(pyglet.window.Window):
                 y_step=self.separation_y
                 for n in range(l):
                     self.vertex.append(pyglet.text.Label(self.graph.get_vertexes()[acum_l+n],
-                                                font_name='Arial',font_size=12,bold=True,
+                                                font_size=12,bold=True,
                                                 x=x_pos+(acum_x)*self.separation_x,
                                                 y=y_pos+(n)*y_step,
                                                 anchor_x='center', anchor_y='center',color=c,
@@ -145,7 +145,7 @@ class DrawGraph(pyglet.window.Window):
                
     def __draw_vertex__(self,v,px,py,color_l,color_c):
         pyglet.text.Label(v.get_name(),
-              font_size=12,bold=False,font_name='Arial',
+              font_size=12,bold=False,
               x=px,
               y=py,
               anchor_x='center', anchor_y='center',color=color_l,

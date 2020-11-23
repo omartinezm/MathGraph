@@ -2,6 +2,7 @@ from vertex import Vertex
 from edge import Edge
 from draw_graph import DrawGraph
 import warnings
+import numpy as np
 
 class Graph:
     """ Graph class
@@ -34,26 +35,81 @@ class Graph:
                 vertex : a vertex in which you are working
                 edge : an edge
                 back : a boolean representing if you are working back or forward.
+        incidence_matrix: np matrix, optional
+            The incidence matrix of the graph, you can initialize the graph just by indicating
+            this matrix. The class priorize this. So if you indicate this parameter it ignores
+            the vertex and edges parameter.
     """
     kind = 'graph'
-    def __init__(self,vertex=[],edges=[],name=None,isdirected=False,
+    def __init__(self,vertex={},edges=[],name=None,isdirected=False,
                  autoupdate=False,updaters={},propagation=False,
+                 incidence_matrix=None
                  ):
-        self.autoupdate=False # We first create the graph, then update it
+        self.autoupdate=False # We first create the graph, then update it if case
         self.propagation=propagation
         self.isdirected=isdirected
         self.name=name
         self.__in_degrees__={}
         self.__out_degrees__={}
+        self.incidence_matrix=incidence_matrix
 
         self.vertex={}
-        self.add_vertex(vertex)
         self.edges=[]
-        self.add_edge(edges)
+        if self.incidence_matrix is not None:
+            self.__create_from_matrix__()
+        else:
+            self.add_vertex(vertex)
+            self.add_edge(edges)
         self.autoupdate=autoupdate
         self.updaters=updaters
         if autoupdate:
             self.update_all()
+
+    def __create_from_matrix__(self):
+        """ Creates the vertexes and edges from the incidence matrix
+        """ 
+        row, col = self.incidence_matrix.shape
+        for i in range(row):
+            ver=Vertex("v"+str(i+1))
+            self.add_vertex([ver])
+
+        for i in range(col):
+            j1, j2 = None, None
+            for j in range(row):
+                if self.incidence_matrix[j][i]!=0:
+                    if j1 is None:
+                        j1=[self.incidence_matrix[j][i],j+1]
+                    else:
+                        j2=[self.incidence_matrix[j][i],j+1]
+                if j1 is not None and j2 is not None:
+                    if j1[0]<j2[0]:
+                        self.isdirected=True
+                        vstart=self.find_vertex_by_name("v"+str(j1[1]))
+                        vend=self.find_vertex_by_name("v"+str(j2[1]))
+                    elif j2[0]<j1[0]:
+                        self.isdirected=True
+                        vstart=self.find_vertex_by_name("v"+str(j2[1]))
+                        vend=self.find_vertex_by_name("v"+str(j1[1]))
+                    else:
+                        vstart=self.find_vertex_by_name("v"+str(j1[1]))
+                        vend=self.find_vertex_by_name("v"+str(j2[1]))
+                    edge = Edge(vstart,vend)
+                    self.add_edge([edge])
+                    break
+    def create_indicende_matrix(self):
+        """ Creates the incidence matrix of the graph.
+        """
+        col, row = len(self.edges),len(self.vertex)
+        self.incidence_matrix=np.zeros([row,col])
+        pos_dir={x:i for x,i in zip(self.vertex,range(len(self.vertex)))}
+        for pos in range(len(self.edges)):
+            if self.isdirected:
+                self.incidence_matrix[pos_dir[self.edges[pos].start]][pos]=-1
+            else:
+                self.incidence_matrix[pos_dir[self.edges[pos].start]][pos]=1
+            self.incidence_matrix[pos_dir[self.edges[pos].end]][pos]=1
+        return self.incidence_matrix
+
     def add_vertex(self,vertex):
         """ Add vertexes to the graph and update the graph stats, if any.
             
@@ -116,6 +172,7 @@ class Graph:
         """
         if not (edge.start in self.vertex):
             # Start vertex does not exist, must add
+            self.incidence_matrix=np.r_[self.incidence_matrix,np.zeros(1)]
             self.add_vertex([edge.start])
             self.__out_degrees__[edge.start]=1
         else:

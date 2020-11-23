@@ -8,7 +8,7 @@ class Tree(Graph):
         This class models a tree graph. It is a subclass of the graph class.
     """
     def __init__(self,vertex=[],edges=[],binary=False,name=None,updaters=None):
-        super().__init__(name=name,updaters=updaters)
+        super().__init__(name=name,updaters=updaters,isdirected=True)
         self.binary=binary
         self.add_edge(edges)
         self.height=self.get_height()

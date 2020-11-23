@@ -11,10 +11,10 @@ class TreeVertex(Vertex):
         parent : TreeVertex, optional
             Parent of the vertex
     """
-    def __init__(self,name,parent=None,updaters=None):
+    def __init__(self,name,weight=0,parent=None,updaters=None):
         """ We set the parent and the updaters.
         """
-        super().__init__(name,updaters)
+        super().__init__(name,weight,updaters)
         self.parent=parent
         self.leafs=[]
         
@@ -43,7 +43,7 @@ class TreeVertex(Vertex):
         """
         self.leafs.remove(leaf)
     def __repr__(self):
-        rep="TreeVertex (name="+self.name
+        rep="TreeVertex (name='"+self.name+"',weight="+str(self.weight)
         if self.parent:
             rep+=", parent="+self.parent.get_name()
         rep+=")"

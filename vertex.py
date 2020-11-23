@@ -22,39 +22,76 @@ class Vertex(object):
         self.updaters={}
         if updaters:
             self.__create_updaters__(updaters)
+    
     def __create_updaters__(self,updaters):
+        """ Create all the updaters of the vertex
+        """
         for up in updaters:
             self.updaters[up]=0
+    
     def add_updater(self,key):
+        """ Add an updater
+        """
         if key not in self.updaters.keys():
             self.updaters[key]=0
+    
     def delete_updater(self,key):
+        """ Delete an updater
+        """
         if key in self.updaters.keys():
             del self.updaters[key]
+    
     def get_weight(self):
+        """ Return the weight of the vertex
+        """
         return self.weight
+    
     def set_weight(self,n_weight):
+        """ Set the weight of the vertex
+        """
         self.weight=n_weight
+    
     def set_name(self,n_name):
+        """ Set the name of the vertex
+        """
         self.name=n_name
+    
     def get_updaters(self):
+        """ Return the updaters
+        """
         return self.updaters
+    
     def get_updater_val(self,key):
+        """ Return the value of the updater
+        """
         try:
             return self.updaters[key]
         except:
             self.add_updater(key)
             return self.updaters[key]
+    
     def get_name(self):
+        """ Return the name of the vertex
+        """
         return self.name
+    
     def get_contain(self):
+        """ Return the container of the vertex
+        """
         return self.contain
+    
     def set_contain(self, contain):
+        """ Set the container of the vertex
+        """
         self.contain=contain
-    def __repr__(self):
-        return "Vertex (name='"+self.name+"',weight="+str(self.weight)+")"
+    
     def update_val(self,key=None,val=None):
+        """ Update the value of the updater
+        """
         if key and self.updaters:
             self.updaters.update({key:val})
         else:
             self.updaters[key]=val
+
+    def __repr__(self):
+        return "Vertex (name='"+self.name+"',weight="+str(self.weight)+")"
