@@ -7,7 +7,7 @@ import numpy as np
 class Graph:
     """ Graph class
     
-        This class models a graph. It is formed by a list of vertext and a loist of edges, a name
+        This class models a graph. It is formed by a list of vertext and a list of edges, a name
         and a boolean which indicates if it's directed or not
         
         Attributes:
@@ -96,7 +96,7 @@ class Graph:
                     edge = Edge(vstart,vend)
                     self.add_edge([edge])
                     break
-    def create_indicende_matrix(self):
+    def create_incidence_matrix(self):
         """ Creates the incidence matrix of the graph.
         """
         col, row = len(self.edges),len(self.vertex)
