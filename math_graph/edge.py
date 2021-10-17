@@ -26,6 +26,7 @@ class Edge:
         self.direction=direction
         self.cost=cost
         self.name=name
+        self.parent=None
         if updaters:
             self.updaters={}
             self.__create_updaters__(updaters)

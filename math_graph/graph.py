@@ -1,6 +1,6 @@
-from vertex import Vertex
-from edge import Edge
-from draw_graph import DrawGraph
+from math_graph.vertex import Vertex
+from math_graph.edge import Edge
+from math_graph.draw_graph import DrawGraph
 import warnings
 import numpy as np
 

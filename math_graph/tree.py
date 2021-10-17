@@ -1,4 +1,4 @@
-from graph import Graph
+from math_graph.graph import Graph
 import warnings
 
 class Tree(Graph):
@@ -37,10 +37,10 @@ class Tree(Graph):
                 # New part on the graph, it set the parent and leafs
                 edge.end.set_parent(edge.start)
                 self.edges.append(edge)
-        if self.autoupdate:
+        """ if self.autoupdate:
             # Update the graph stats if case
             for ed in edges:
-                self.update(vertex=[ed.end],propagate=False)
+                self.update(vertex=[ed.end],propagate=False) """
     def delete_edge(self, edge):
         """ Deletes an edge
 
