@@ -1,3 +1,4 @@
+from math_graph.tree_vertex import TreeVertex
 from math_graph.vertex import Vertex
 from math_graph.edge import Edge
 from math_graph.draw_graph import DrawGraph
@@ -43,19 +44,20 @@ class Graph:
     kind = 'graph'
     def __init__(self,vertex={},edges=[],name=None,isdirected=False,
                  autoupdate=False,updaters={},propagation=False,
-                 incidence_matrix=None
+                 incidence_matrix=None,istree=False
                  ):
-        self.autoupdate=False # We first create the graph, then update it if case
+        self.autoupdate=False # We first create the graph, then update if case
         self.propagation=propagation
         self.isdirected=isdirected
         self.name=name
         self.__in_degrees__={}
         self.__out_degrees__={}
         self.incidence_matrix=incidence_matrix
+        self.istree=istree
 
         self.vertex={}
         self.edges=[]
-        if self.incidence_matrix is not None:
+        if self.incidence_matrix is not None and not istree:
             self.__create_from_matrix__()
         else:
             self.add_vertex(vertex)
@@ -162,17 +164,24 @@ class Graph:
                 exist=True
                 break
         return exist
-    def __add_new_edge__(self,edge):
+    def __add_new_edge__(self,edge,isTree=False):
         """ Add a new edge
         
             Parameters:
             ===========
             edge : Edge
                 The edge we want to add. This edge must be new.
+            isTree : Bool
+                True is the graph is a tree
         """
         if not (edge.start in self.vertex):
             # Start vertex does not exist, must add
-            self.incidence_matrix=np.r_[self.incidence_matrix,np.zeros(1)]
+            if isTree:
+                if len(self.vertex)>0 and not (edge.end in self.vertex):
+                    return False, "Vertex must be part of the tree."
+                edge.start.set_height(0)
+            else:
+                self.incidence_matrix=np.r_[self.incidence_matrix,np.zeros(1)]
             self.add_vertex([edge.start])
             self.__out_degrees__[edge.start]=1
         else:
@@ -182,9 +191,15 @@ class Graph:
             # End vertex does not exist, must add
             self.add_vertex([edge.end])
             self.__in_degrees__[edge.end]=1
+            if isTree:
+                edge.end.set_height(edge.start.get_height()+1)
         else:
             # End vertex exist, must increase the in_degree of end vertex
             self.__in_degrees__.update({edge.end:self.__in_degrees__[edge.end]+1})
+            if isTree:
+                if edge.end.get_height()<edge.start.get_height():
+                    return False, "Vertexes "+edge.start.get_name()+" creates a cicle with "+edge.end.get_name()+"."
+        return True,None
     def set_vertex_updater_val(self, vertex, key, val):
         """ Set the value of the updater at the given vertex
             
@@ -337,6 +352,7 @@ class Graph:
         for key,val in self.vertex.items():
             if val==name:
                 return key
+        return None
 
     def update(self,vertex=[],edge=[],propagate=False,exclude=[],back=False,key=None):
         """ Update funcion of the graph

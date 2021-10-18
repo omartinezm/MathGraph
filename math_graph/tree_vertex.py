@@ -11,12 +11,13 @@ class TreeVertex(Vertex):
         parent : TreeVertex, optional
             Parent of the vertex
     """
-    def __init__(self,name,weight=0,parent=None,updaters=None):
+    def __init__(self,name,weight=0,parent=None,updaters=None,height=None):
         """ We set the parent and the updaters.
         """
         super().__init__(name,weight,updaters)
         self.parent=parent
         self.leafs=[]
+        self.height=height
         
     def get_parent(self):
         """ Returns the parent of the vertex
@@ -26,10 +27,18 @@ class TreeVertex(Vertex):
         """ Returns the leafs of the vertex
         """
         return self.leafs
+    def get_height(self):
+        """ Returns the height of the vertex
+        """
+        return self.height
     def set_parent(self,parent):
         """ Set the parent of the vertex
         """
         self.parent=parent
+    def set_height(self,h):
+        """ Set the height of the vertex
+        """
+        self.height=h
     def add_leafs(self,leaf):
         """ Add leafs to the vertex
         """

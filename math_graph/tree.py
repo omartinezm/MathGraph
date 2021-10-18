@@ -1,4 +1,7 @@
+from math_graph.edge import Edge
 from math_graph.graph import Graph
+from math_graph.tree_vertex import TreeVertex
+
 import warnings
 
 class Tree(Graph):
@@ -7,11 +10,40 @@ class Tree(Graph):
 
         This class models a tree graph. It is a subclass of the graph class.
     """
-    def __init__(self,vertex=[],edges=[],binary=False,name=None,updaters=None):
-        super().__init__(name=name,updaters=updaters,isdirected=True)
+    def __init__(self,vertex=[],edges=[],binary=False,name=None,updaters=None,incidence_matrix=None):
+        super().__init__(name=name,updaters=updaters,isdirected=True,incidence_matrix=incidence_matrix,istree=True)
+        self.__create_from_matrix__()
         self.binary=binary
-        self.add_edge(edges)
-        self.height=self.get_height()
+        ae=self.add_edge(edges)
+        if not ae[0]:
+            print(ae[1])
+        else:
+            self.height=self.get_height()
+    def __create_from_matrix__(self):
+        """ Creates the vertexes and edges from the incidence matrix
+        """
+        if self.incidence_matrix is not None:
+            row, col = self.incidence_matrix.shape
+            for i in range(col):
+                j1, j2 = None, None
+                for j in range(row):
+                    if self.incidence_matrix[j][i]!=0:
+                        if j1 is None:
+                            j1=j+1
+                        else:
+                            j2=j+1
+                    if j1 is not None and j2 is not None:
+                        vstart=self.find_vertex_by_name("v"+str(j1))
+                        vend=self.find_vertex_by_name("v"+str(j2))
+                        if vstart is None:
+                            vstart=TreeVertex("v"+str(j1))
+                        if vend is None:
+                            vend=TreeVertex("v"+str(j2))
+                        edge = Edge(vstart,vend)
+                        res=self.add_edge([edge])
+                        if not res[0]:
+                            print(res[1])
+                        break
     def add_edge(self,edgs):
         """ Add an edge to the graph and update the graph stats, if any.
 
@@ -26,9 +58,11 @@ class Tree(Graph):
             exist=self.__exist_edge__(edge)
             if(not exist):
                 if edge.end.parent:
-                    return "This edge is not admisible on a tree. The vertex "+edge.end.get_name()+" already have a parent"
-                # If we are in this part of code then the edge is admisible.
-                self.__add_new_edge__(edge)
+                    return False,"The edge "+str(edge)+" is not admisible on a tree. The vertex "+edge.end.get_name()+" already have a parent."
+                # If we are in this part of code then the edge is admisible, but we need to see if there is a loop
+                tadd=self.__add_new_edge__(edge,isTree=True)
+                if not tadd[0]:
+                    return False,"The edge "+str(edge)+" is not admisible on a tree. "+tadd[1]
                 # If is a binary graph we set the left and right leaf
                 if edge.direction:
                     edge.start.add_leafs(edge.end,edge.direction)
@@ -37,6 +71,7 @@ class Tree(Graph):
                 # New part on the graph, it set the parent and leafs
                 edge.end.set_parent(edge.start)
                 self.edges.append(edge)
+        return True,None
         """ if self.autoupdate:
             # Update the graph stats if case
             for ed in edges:
@@ -101,12 +136,14 @@ class Tree(Graph):
         """
         if not v:
             v=self.find_root()
+            v.set_height(0)
         if(deep==0):
-            text=v.get_name()
+            text=v.get_name()+"    [root]"
         elif(deep>1):
             text="  "*(deep)+"\-"+v.get_name()+"    [deep="+str(deep)+"]"
         else:
             text="\\"*(deep)+"-"+v.get_name()+"    [deep="+str(deep)+"]"
+        v.set_height(deep)
         print(text)
         if self.binary:
             for f in v.get_leafs().values():

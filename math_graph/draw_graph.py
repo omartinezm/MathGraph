@@ -23,7 +23,7 @@ class DrawGraph(pyglet.window.Window):
             h=700
         super().__init__(min([w,1300]),
                          min([h,900]),
-                         config=conf,caption='Graph',resizable=False,
+                         config=conf,caption='Graph '+str(graph.kind),resizable=False,
                          style=pyglet.window.Window.WINDOW_STYLE_DIALOG,
                          *args, **kwargs)
         self.main_batch = pyglet.graphics.Batch()
