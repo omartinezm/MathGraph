@@ -1,8 +1,8 @@
 import pyglet
-from pyglet import clock
+#from pyglet import clock
 from pyglet.gl import *
 from pyglet import shapes
-from tqdm import tqdm,tqdm_gui
+#from tqdm import tqdm,tqdm_gui
 from math import cos, sin, pi
 
 ZOOM_IN_FACTOR = 1.2
@@ -10,17 +10,21 @@ ZOOM_OUT_FACTOR = 1/ZOOM_IN_FACTOR
 
 class DrawGraph(pyglet.window.Window):
     
-    def __init__(self, graph, width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
+    def __init__(self, graph, path=[], width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
         self.graph=graph
+        self.path=path
         self.separation_x=x_sep
         self.separation_y=y_sep
         conf=Config(samples=4,depth_size=16)
         if(self.graph.kind=="NeuralNetFC"):
             w=self.separation_x*(self.graph.nlayers+1)
             h=self.separation_y*(max(self.graph.npl)+1)
+        elif(self.graph.kind=="Tree"):
+            w=500#self.separation_x*(self.graph.height)
+            h=self.separation_y*(self.graph.height+1)
         else:
-            w=700
-            h=700
+            w=1300
+            h=900
         super().__init__(min([w,1300]),
                          min([h,900]),
                          config=conf,caption='Graph '+str(graph.kind),resizable=False,
@@ -110,12 +114,12 @@ class DrawGraph(pyglet.window.Window):
                 acum_l+=l
                 acum_x+=1
         elif self.graph.kind=="Tree":
-            vid=[self.graph.find_root()]
-            y_sep=(self.height-100)/self.graph.height
+            vid=[self.graph.root]
+            y_sep=70#(self.height-100)/self.graph.height
             self.circles={}
             nv=0
             while(vid):
-                x_sep=self.width/(len(vid)+1)
+                x_sep=(self.width+20)/(len(vid)+1)
                 nh=0
                 for v in vid:
                     self.__draw_vertex__(v,x_sep+x_sep*(nh),self.height-50-(y_sep)*nv,color_l=(0, 0, 255,255),color_c=(255, 255, 255))
@@ -129,8 +133,15 @@ class DrawGraph(pyglet.window.Window):
                 vid=new
                 nv+=1
             for edge in self.graph.edges:
-                self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
-
+                # This must be improved
+                if edge.start in self.path:
+                    # id=self.path.index(edge.start)
+                    if edge.end in self.path:
+                        self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
+                    else:
+                        self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+                else:
+                    self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
         elif self.graph.vertex:
             angle=0
             theta=2*pi/(len(self.graph.vertex))
@@ -141,8 +152,15 @@ class DrawGraph(pyglet.window.Window):
                         self.height/2+(self.height/2-100)*sin(angle),color_l=(0, 0, 255,255),color_c=(255, 255, 255))
                 angle+=theta
             for edge in self.graph.edges:
-                self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
-               
+                if edge.start in self.path:
+                    if edge.end in self.path:
+                        self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
+                    else:
+                        self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+                else:
+                    self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+            
+        
     def __draw_vertex__(self,v,px,py,color_l,color_c):
         pyglet.text.Label(v.get_name(),
               font_size=12,bold=False,

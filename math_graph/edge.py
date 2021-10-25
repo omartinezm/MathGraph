@@ -20,13 +20,12 @@ class Edge:
             A dictionary with all the stats an object to be updated in any change of the graph
     """
     kind = 'edge'
-    def __init__(self,vin,vend,direction=None,cost=None,name=None, updaters=None):
+    def __init__(self,vin,vend,direction=None,cost=1,name=None, updaters=None):
         self.start=vin
         self.end=vend
         self.direction=direction
         self.cost=cost
         self.name=name
-        self.parent=None
         if updaters:
             self.updaters={}
             self.__create_updaters__(updaters)

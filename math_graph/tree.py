@@ -19,6 +19,7 @@ class Tree(Graph):
             print(ae[1])
         else:
             self.height=self.get_height()
+        self.root=self.find_root()
     def __create_from_matrix__(self):
         """ Creates the vertexes and edges from the incidence matrix
         """
@@ -72,10 +73,7 @@ class Tree(Graph):
                 edge.end.set_parent(edge.start)
                 self.edges.append(edge)
         return True,None
-        """ if self.autoupdate:
-            # Update the graph stats if case
-            for ed in edges:
-                self.update(vertex=[ed.end],propagate=False) """
+
     def delete_edge(self, edge):
         """ Deletes an edge
 

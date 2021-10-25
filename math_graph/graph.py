@@ -321,23 +321,23 @@ class Graph:
     def find_neighborhood_vertexes(self,vertex,starting=True,ending=True):
         """ Function that find all the neighborhood vertexes
         
-            Given a vertex if returns all those vertexes which are connected to this
+            Given a vertex it returns all those vertexes which are connected to this
             by an edge. It can be exiting o entering from the vertex.
             
             Parameters:
             ===========
             vertex : Vertex,
                 The vertex we are studying
-            exiting : Boolean, optional
+            starting : Boolean, optional
                 A boolean that indicates if we want the edges starting form the vertex
-            entering : Boolean, optional
-                A boolean that indicates if we want the edges ending form the vertex        
+            ending : Boolean, optional
+                A boolean that indicates if we want the edges ending on the vertex        
         """
         res=[]
-        for edge in self.get_edges(vertex,starting=starting,ending=ending):
-            if starting:
+        for edge in self.get_edges(vertex,starting=True,ending=True):
+            if starting and edge.start!=vertex:
                 res.append(edge.start)
-            elif ending:
+            elif ending and edge.end!=vertex:
                 res.append(edge.end)
         return res
     
@@ -495,11 +495,11 @@ class Graph:
                 The function p_back is the back and forward propagation on a neuronal net.
         """
         self.updaters[key]=func
-    def draw(self,*arg,**kwargs):
+    def draw(self,path=None,*arg,**kwargs):
         """ Draw a graph using the DrawGraph class
             
         """
-        dg=DrawGraph(self,*arg,**kwargs)
+        dg=DrawGraph(self,path,*arg,**kwargs)
         dg.run()
         
     def __repr__(self):
