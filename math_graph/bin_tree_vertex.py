@@ -1,4 +1,4 @@
-from tree_vertex import TreeVertex
+from .tree_vertex import TreeVertex
 
 class BinTreeVertex(TreeVertex):
     """ Binary tree vertex class

@@ -1,8 +1,8 @@
 from tqdm import tqdm,tqdm_gui
 from random import random
-from graph import Graph
-from edge import Edge
-from neuron import Neuron
+from .graph import Graph
+from .edge import Edge
+from .neuron import Neuron
 
 class NeuralNetFC(Graph):
     

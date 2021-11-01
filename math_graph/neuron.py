@@ -1,4 +1,4 @@
-from vertex import Vertex
+from .vertex import Vertex
 
 class Neuron(Vertex):
     def __init__(self,name,updaters=None,bias=0):

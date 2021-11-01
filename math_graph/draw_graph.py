@@ -5,14 +5,17 @@ from pyglet import shapes
 #from tqdm import tqdm,tqdm_gui
 from math import cos, sin, pi
 
+from pyglet.libs.win32.constants import ELF_VENDOR_SIZE
+
 ZOOM_IN_FACTOR = 1.2
 ZOOM_OUT_FACTOR = 1/ZOOM_IN_FACTOR
 
 class DrawGraph(pyglet.window.Window):
     
-    def __init__(self, graph, path=[], width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
+    def __init__(self, graph, path={}, mst=[], width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
         self.graph=graph
         self.path=path
+        self.mst=mst
         self.separation_x=x_sep
         self.separation_y=y_sep
         conf=Config(samples=4,depth_size=16)
@@ -64,24 +67,24 @@ class DrawGraph(pyglet.window.Window):
         self.bottom-=dy*self.zoom_level
         self.top-=dy*self.zoom_level
 
-    def on_mouse_scroll(self, x, y, dx, dy):
-        f=ZOOM_IN_FACTOR if dy>0 else ZOOM_OUT_FACTOR if dy<0 else 1
-        if 0.2<self.zoom_level*f< 5:
-            self.zoom_level*=f
+    # def on_mouse_scroll(self, x, y, dx, dy):
+    #     f=ZOOM_IN_FACTOR if dy>0 else ZOOM_OUT_FACTOR if dy<0 else 1
+    #     if 0.2<self.zoom_level*f< 5:
+    #         self.zoom_level*=f
 
-            mouse_x=x/self.width
-            mouse_y=y/self.height
+    #         mouse_x=x/self.width
+    #         mouse_y=y/self.height
 
-            mouse_x_in_world=self.left+mouse_x*self.zoomed_width
-            mouse_y_in_world=self.bottom+mouse_y*self.zoomed_height
+    #         mouse_x_in_world=self.left+mouse_x*self.zoomed_width
+    #         mouse_y_in_world=self.bottom+mouse_y*self.zoomed_height
 
-            self.zoomed_width*=f
-            self.zoomed_height*=f
+    #         self.zoomed_width*=f
+    #         self.zoomed_height*=f
 
-            self.left=mouse_x_in_world-mouse_x*self.zoomed_width
-            self.right=mouse_x_in_world+(1-mouse_x)*self.zoomed_width
-            self.bottom=mouse_y_in_world-mouse_y*self.zoomed_height
-            self.top=mouse_y_in_world+(1-mouse_y)*self.zoomed_height
+    #         self.left=mouse_x_in_world-mouse_x*self.zoomed_width
+    #         self.right=mouse_x_in_world+(1-mouse_x)*self.zoomed_width
+    #         self.bottom=mouse_y_in_world-mouse_y*self.zoomed_height
+    #         self.top=mouse_y_in_world+(1-mouse_y)*self.zoomed_height
 
     def __create_batch__(self):
         if self.graph.kind=="NeuralNetFC":
@@ -133,10 +136,15 @@ class DrawGraph(pyglet.window.Window):
                 vid=new
                 nv+=1
             for edge in self.graph.edges:
-                # This must be improved
-                if edge.start in self.path:
-                    # id=self.path.index(edge.start)
-                    if edge.end in self.path:
+                if edge in self.mst:
+                    self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 255))
+                elif (edge.start in self.path.keys()) or (edge.end in self.path.keys()):
+                    if edge.start in self.path.keys():
+                        if self.path[edge.start]==edge.end:
+                            self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
+                        else:
+                            self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+                    elif self.path[edge.end]==edge.start:
                         self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
                     else:
                         self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
@@ -152,9 +160,19 @@ class DrawGraph(pyglet.window.Window):
                         self.height/2+(self.height/2-100)*sin(angle),color_l=(0, 0, 255,255),color_c=(255, 255, 255))
                 angle+=theta
             for edge in self.graph.edges:
-                if edge.start in self.path:
-                    if edge.end in self.path:
-                        self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
+                if edge in self.mst:
+                    self.__draw_line__(edge.start,edge.end,color_l=(55, 55, 255))
+                elif self.path:
+                    if (edge.start in self.path.keys()) or (edge.end in self.path.keys()):
+                        if edge.start in self.path.keys():
+                            if self.path[edge.start]==edge.end:
+                                self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
+                            else:
+                                self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+                        elif self.path[edge.end]==edge.start:
+                            self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
+                        else:
+                            self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
                     else:
                         self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
                 else:

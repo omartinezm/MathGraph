@@ -60,7 +60,7 @@ class Edge:
             self.add_updater(key)
             return self.updaters[key]
     def __repr__(self):
-        return "Edge ("+self.start.get_name()+","+self.end.get_name()+")"
+        return "Edge ("+self.start.get_name()+","+self.end.get_name()+",cost="+str(self.cost)+")"
     def update_val(self,key=None,val=None):
         if key and self.updaters:
             self.updaters.update({key:val})

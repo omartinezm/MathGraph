@@ -495,7 +495,7 @@ class Graph:
                 The function p_back is the back and forward propagation on a neuronal net.
         """
         self.updaters[key]=func
-    def draw(self,path=None,*arg,**kwargs):
+    def draw(self,path=[],*arg,**kwargs):
         """ Draw a graph using the DrawGraph class
             
         """
