@@ -1,4 +1,4 @@
-from math_graph.vertex import Vertex
+from mathgraph.vertex import Vertex
 
 class TreeVertex(Vertex):
     """ Tree vertex class

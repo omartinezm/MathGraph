@@ -1,6 +1,7 @@
 import math as mt
 import random as rd
 import numpy as np
+from mathgraph.edge import Edge
 from timeit import default_timer as timer
 
 ###
@@ -13,7 +14,7 @@ class SearchAlgorithm:
         self.graph=graph
         self.dist={}
         self.prev={}
-        self.path={}
+        self.path=[]
         self.run_time=0
         self.source=source
         self.target=target
@@ -44,7 +45,7 @@ class SearchAlgorithm:
         pass
 
     def find_path(self):
-        path={}
+        path=[]
         act=self.target
         end=False
         while(not end):
@@ -52,11 +53,13 @@ class SearchAlgorithm:
                 end=True
                 path=[]
                 break
-            path[act]=self.prev[act]
+            ed=self.graph.get_edges(ver=act,vend=self.prev[act])
+            path.append(ed)
             act=self.prev[act]
             if act==self.source:
                 end=True
         self.path=path
+        
     
     '''
         Returns the time needed to run the algorithm
@@ -115,6 +118,7 @@ class Dijkstra(SearchAlgorithm):
     """
     def apply(self):
         stime=timer()
+        pedges=[]
         Q=[]
         for v in self.graph.get_vertexes():
             self.dist[v]=mt.inf
@@ -127,12 +131,16 @@ class Dijkstra(SearchAlgorithm):
                 break
             Q.remove(u)
             edges=self.graph.get_edges(u)
+            ted=None
             for edge in edges:
                 alt=self.dist[u]+edge.get_cost()
                 neig = edge.start if edge.start != u else edge.end
                 if alt<self.dist[neig]:
+                    ted=edge
                     self.prev[neig]=u
                     self.dist[neig]=alt
+            if ted:
+                pedges.append(ted)
         etime=timer()
         self.run_time=etime-stime
         self.find_path()
@@ -297,18 +305,21 @@ class FloydWarshall(SearchAlgorithm):
     
     def find_path(self):
         exist=True
-        path=[self.source]
+        # path=[self.source]
+        edges=[]
         if self.target==None:
             exist=False
-            path=[]
+            # path=[]
         elif self.prev[self.source][self.target]==None:
             exist=False
-            path=[]
+            # path=[]
         if exist:
             s=self.source
             t=self.target
             while(s!=t):
+                edge=self.graph.get_edges(ver=s,vend=self.prev[s][t])
+                edges.append(edge)
                 s=self.prev[s][t]
-                path.insert(0,s)
-                self.path[path[1]]=path[0]
-        self.path
+                # path.insert(0,s)
+                # self.path[path[1]]=path[0]
+        self.path=edges

@@ -1,7 +1,7 @@
-from math_graph.tree_vertex import TreeVertex
-from math_graph.vertex import Vertex
-from math_graph.edge import Edge
-from math_graph.draw_graph import DrawGraph
+from mathgraph.tree_vertex import TreeVertex
+from mathgraph.vertex import Vertex
+from mathgraph.edge import Edge
+from mathgraph.draw_graph import DrawGraph
 import warnings
 import numpy as np
 
@@ -264,7 +264,7 @@ class Graph:
         
         """
         return list(self.vertex)
-    def get_edges(self,ver=None,starting=True, ending=True):
+    def get_edges(self,ver=None,vend=None,starting=True, ending=True):
         """ Returns the edges of the graph.
         
             This method returns all the edges of the graph, or also the edged connected to
@@ -285,10 +285,18 @@ class Graph:
         else:
             res=[]
             for edge in self.edges:
-                if edge.start == ver and starting:
-                    res.append(edge)
-                elif edge.end == ver and ending:
-                    res.append(edge)
+                if vend!=None:
+                    if self.isdirected:
+                        if edge.start==ver and vend==edge.end:
+                            return edge
+                    else:
+                        if ver in edge.get_vertexes() and vend in edge.get_vertexes():
+                            return edge
+                else:
+                    if edge.start == ver and starting:
+                        res.append(edge)
+                    elif edge.end == ver and ending:
+                        res.append(edge)
             return res
     def get_degree(self,vertex,exiting=False,entering=False):
         """ Find the degree of the vertex

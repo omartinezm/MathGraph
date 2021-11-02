@@ -1,6 +1,6 @@
 import math as mt
 
-from math_graph.graph import Graph
+from mathgraph.graph import Graph
 
 class MinSpanningTreeAlgorithm:
     kind="Minimal Spanning Tree"

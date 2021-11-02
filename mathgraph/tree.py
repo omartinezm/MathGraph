@@ -1,6 +1,6 @@
-from math_graph.edge import Edge
-from math_graph.graph import Graph
-from math_graph.tree_vertex import TreeVertex
+from mathgraph.edge import Edge
+from mathgraph.graph import Graph
+from mathgraph.tree_vertex import TreeVertex
 
 import warnings
 

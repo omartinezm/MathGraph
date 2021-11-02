@@ -1,8 +1,6 @@
 import pyglet
-#from pyglet import clock
 from pyglet.gl import *
 from pyglet import shapes
-#from tqdm import tqdm,tqdm_gui
 from math import cos, sin, pi
 
 from pyglet.libs.win32.constants import ELF_VENDOR_SIZE
@@ -12,7 +10,7 @@ ZOOM_OUT_FACTOR = 1/ZOOM_IN_FACTOR
 
 class DrawGraph(pyglet.window.Window):
     
-    def __init__(self, graph, path={}, mst=[], width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
+    def __init__(self, graph, path=[], mst=[], width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
         self.graph=graph
         self.path=path
         self.mst=mst
@@ -137,17 +135,9 @@ class DrawGraph(pyglet.window.Window):
                 nv+=1
             for edge in self.graph.edges:
                 if edge in self.mst:
-                    self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 255))
-                elif (edge.start in self.path.keys()) or (edge.end in self.path.keys()):
-                    if edge.start in self.path.keys():
-                        if self.path[edge.start]==edge.end:
-                            self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
-                        else:
-                            self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
-                    elif self.path[edge.end]==edge.start:
-                        self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
-                    else:
-                        self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+                    self.__draw_line__(edge.start,edge.end,color_l=(55, 55, 255))
+                elif edge in self.path:
+                    self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
                 else:
                     self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
         elif self.graph.vertex:
@@ -162,19 +152,8 @@ class DrawGraph(pyglet.window.Window):
             for edge in self.graph.edges:
                 if edge in self.mst:
                     self.__draw_line__(edge.start,edge.end,color_l=(55, 55, 255))
-                elif self.path:
-                    if (edge.start in self.path.keys()) or (edge.end in self.path.keys()):
-                        if edge.start in self.path.keys():
-                            if self.path[edge.start]==edge.end:
-                                self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
-                            else:
-                                self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
-                        elif self.path[edge.end]==edge.start:
-                            self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
-                        else:
-                            self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
-                    else:
-                        self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
+                elif edge in self.path:
+                    self.__draw_line__(edge.start,edge.end,color_l=(255, 255, 55))
                 else:
                     self.__draw_line__(edge.start,edge.end,color_l=(255, 55, 55))
             
