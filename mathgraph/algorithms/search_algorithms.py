@@ -1,7 +1,4 @@
 import math as mt
-import random as rd
-import numpy as np
-from mathgraph.edge import Edge
 from timeit import default_timer as timer
 
 ###
@@ -38,12 +35,15 @@ class SearchAlgorithm:
         else:
             return True
 
-    """
+    '''
         Apply the algorithm
-    """
+    '''
     def apply(self):
         pass
 
+    '''
+        This method finds the edges in the graph that forms the path
+    '''
     def find_path(self):
         path=[]
         act=self.target
@@ -65,7 +65,6 @@ class SearchAlgorithm:
         Returns the time needed to run the algorithm
     '''
     def get_gime(self):
-        fortime=float("{:.20f}".format(self.run_time))
         return self.kind,self.run_time
 
     '''
@@ -77,7 +76,7 @@ class SearchAlgorithm:
                 pass
             else:
                 self.source=vertex
-                print("Source changed. You must run the 'apply' method  to refresh the paths.")
+                print("Source changed. You must run the 'apply' method  to refresh the path.")
 
     '''
         Set the target of the algorithm
@@ -102,6 +101,12 @@ class SearchAlgorithm:
     def get_target(self):
         return self.target
     
+    '''
+        Returns the path
+    '''
+    def get_path(self):
+        return self.path
+
 class Dijkstra(SearchAlgorithm):
     '''
         Implementation of Dijkstra's algorithm over a graph.
@@ -113,9 +118,9 @@ class Dijkstra(SearchAlgorithm):
             self.apply()
         
     
-    """
+    '''
         Apply the Dijkstra algorithm
-    """
+    '''
     def apply(self):
         stime=timer()
         pedges=[]
@@ -145,11 +150,13 @@ class Dijkstra(SearchAlgorithm):
         self.run_time=etime-stime
         self.find_path()
     
-    """
+    '''
         Find the element with the minimun distance on the set Q
-        Q = list o vertexes
-        dist = dictionary of distances
-    """
+
+        Parameters:
+        =====
+        Q   = list o vertexes
+    '''
     def __find_min__(self,Q):
         min=Q[0]
         for vertex in Q:
@@ -305,14 +312,11 @@ class FloydWarshall(SearchAlgorithm):
     
     def find_path(self):
         exist=True
-        # path=[self.source]
         edges=[]
         if self.target==None:
             exist=False
-            # path=[]
         elif self.prev[self.source][self.target]==None:
             exist=False
-            # path=[]
         if exist:
             s=self.source
             t=self.target
@@ -320,6 +324,4 @@ class FloydWarshall(SearchAlgorithm):
                 edge=self.graph.get_edges(ver=s,vend=self.prev[s][t])
                 edges.append(edge)
                 s=self.prev[s][t]
-                # path.insert(0,s)
-                # self.path[path[1]]=path[0]
         self.path=edges

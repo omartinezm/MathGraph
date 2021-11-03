@@ -1,4 +1,4 @@
-# math_graph
+# Math Graph
  An implementation of [graph](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) on python
 
 ## Description
@@ -50,12 +50,18 @@ g1.draw()
 
 1. The structure is intented with a wide use, so the `Vertex` and `Edge` class include `updaters`. This updaters are a dictionary of stats that can change following some rules given y the updater functions on the `Graph` class. The updaters on the graph is a dictionary with functions that takes some arguments and refresh the data of the updaters dictionary on `Vertex`es and `Edge`s.
 
-2. Some particular graphs were included, like `Tree` and `NeuralNetFC`.
+2. Some particular graphs were included, like `Tree` and `NeuralNetFC`. The `Tree` class, as it's name say, create a tree. You can also create a neural net. At this moments only accepts fully connected nn's.
 
-3. The pack `algorithms` (to be renamed) have some method to apply over the structure `Graph`. Like Dijkstra and Greddy path search, and Kruskal minimum spanning tree. This paths can be visualized on the `g1.draw()` if you give it as arguments.
+3. The pack `mathgraph.algorithms` have some methods to apply over the structure `Graph`. Like Dijkstra and Greddy path search, and Kruskal minimum spanning tree. This paths can be visualized on the `g1.draw()` if you give it as arguments.
 
 ```python
 from algorithms.search_algorithms import Dijkstra
+source=v1
+target=v6
 dj=Dijkstra(g1,source=source,target=target)
-g1.draw(path=dj.prev)
+g1.draw(path=dj.get_path())
 ```
+4. A graph can be created from an incidence matrix.
+
+### Requirements
+`pyglet`, `numpy`.

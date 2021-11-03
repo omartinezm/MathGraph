@@ -2,8 +2,6 @@ from mathgraph.edge import Edge
 from mathgraph.graph import Graph
 from mathgraph.tree_vertex import TreeVertex
 
-import warnings
-
 class Tree(Graph):
     kind = 'Tree'
     """ Tree class
