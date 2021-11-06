@@ -3,6 +3,11 @@ import math as mt
 from mathgraph.graph import Graph
 
 class MinSpanningTreeAlgorithm:
+    '''
+        Minimal Spanning Tree algorithm
+
+        This class apply an algorithm over the graph. The result is a minimal spanning tree.
+    '''
     kind="Minimal Spanning Tree"
     def __init__(self,graph) -> None:
         self.mst=Graph(name="mnt")
@@ -21,6 +26,13 @@ class MinSpanningTreeAlgorithm:
     def apply(self,graph):
         pass
 
+    def to_draw(self):
+        return self.prev
+
+    def get_mst(self):
+        self.mst.add_edge(self.prev)
+        return self.mst
+
 class Boruvka(MinSpanningTreeAlgorithm):
     kind="Boruvka"
     def __init__(self, graph) -> None:
@@ -30,6 +42,9 @@ class Boruvka(MinSpanningTreeAlgorithm):
         return super().apply(graph)
 
 class Kruskal(MinSpanningTreeAlgorithm):
+    '''
+        Kruskal algorithm.
+    '''
     kind="Kruskal"
     def __init__(self, graph) -> None:
         super().__init__(graph)

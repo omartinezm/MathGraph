@@ -180,8 +180,6 @@ class Graph:
                 if len(self.vertex)>0 and not (edge.end in self.vertex):
                     return False, "Vertex must be part of the tree."
                 edge.start.set_height(0)
-            else:
-                self.incidence_matrix=np.r_[self.incidence_matrix,np.zeros(1)]
             self.add_vertex([edge.start])
             self.__out_degrees__[edge.start]=1
         else:

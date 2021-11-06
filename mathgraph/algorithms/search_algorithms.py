@@ -64,7 +64,7 @@ class SearchAlgorithm:
     '''
         Returns the time needed to run the algorithm
     '''
-    def get_gime(self):
+    def get_time(self):
         return self.kind,self.run_time
 
     '''
