@@ -1,4 +1,5 @@
 import math as mt
+import copy
 
 from mathgraph.graph import Graph
 
@@ -78,3 +79,36 @@ class Kruskal(MinSpanningTreeAlgorithm):
                 if vertex in vset[key]:
                     return key
         return None
+
+class Prim(MinSpanningTreeAlgorithm):
+    '''
+        Prim's algorimth for min. spanning tree
+    '''
+    def __init__(self, graph) -> None:
+        super().__init__(graph)
+
+    def apply(self, graph):
+        F,R,V=[],[], graph.get_vertexes() # Edges in the tree, Reached vertexes
+        av=graph.get_vertexes()[0] # Actual vertex
+        V.remove(av)
+        while(len(V)>0):
+            R.append(av)
+            edges=set()
+            for v in R:
+                edges.update(graph.get_edges(ver=v))
+            edges=sorted(edges, key=lambda edge: edge.get_cost())
+            found=False
+            while(not found):
+                edge=edges[0]
+                startend=[edge.start,edge.end]
+                for v in startend:
+                    if v not in R and v in V:
+                        F.append(edge)
+                        av=v
+                        found=True
+                        V.remove(av)
+                        break
+                edges=edges[1:]
+        self.prev=F
+
+

@@ -10,10 +10,11 @@ ZOOM_OUT_FACTOR = 1/ZOOM_IN_FACTOR
 
 class DrawGraph(pyglet.window.Window):
     
-    def __init__(self, graph, path=[], mst=[], width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
+    def __init__(self, graph, path=[], mst=[], draw_updater=None, width=0, height=0, x_sep=80, y_sep= 80, *args, **kwargs):
         self.graph=graph
         self.path=path
         self.mst=mst
+        self.draw_updater=draw_updater
         self.separation_x=x_sep
         self.separation_y=y_sep
         conf=Config(samples=4,depth_size=16)
@@ -159,7 +160,10 @@ class DrawGraph(pyglet.window.Window):
             
         
     def __draw_vertex__(self,v,px,py,color_l,color_c):
-        pyglet.text.Label(v.get_name(),
+        name=v.get_name()
+        if self.draw_updater:
+            name=str(v.get_updater_val(self.draw_updater))
+        pyglet.text.Label(name,
               font_size=12,bold=False,
               x=px,
               y=py,

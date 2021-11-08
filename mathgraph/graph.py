@@ -112,6 +112,17 @@ class Graph:
             self.incidence_matrix[pos_dir[self.edges[pos].end]][pos]=1
         return self.incidence_matrix
 
+    def create_adjacency_matrix(self):
+        """ Creates the incidence matrix of the graph.
+        """
+        n= len(self.vertex)
+        self.incidence_matrix=np.zeros([n,n])
+        pos_dir={x:i for x,i in zip(self.vertex,range(len(self.vertex)))}
+        for pos in range(len(self.edges)):
+            self.incidence_matrix[pos_dir[self.edges[pos].start]][pos_dir[self.edges[pos].end]]=1
+            self.incidence_matrix[pos_dir[self.edges[pos].end]][pos_dir[self.edges[pos].start]]=1
+        return self.incidence_matrix
+
     def add_vertex(self,vertex):
         """ Add vertexes to the graph and update the graph stats, if any.
             

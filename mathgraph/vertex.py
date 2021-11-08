@@ -67,6 +67,7 @@ class Vertex(object):
         try:
             return self.updaters[key]
         except:
+            print("Updater does not exist. Will be added with zero as initial value.")
             self.add_updater(key)
             return self.updaters[key]
     

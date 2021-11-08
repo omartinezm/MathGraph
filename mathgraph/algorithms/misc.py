@@ -94,11 +94,12 @@ class PageRank:
     '''
         A page rank implementation
     '''
-    def __init__(self,graph,iterations=100,dumf=0.85) -> None:
+    def __init__(self,graph,iterations=100,dumf=0.85,aspercentage=False) -> None:
         self.graph=graph
         self.iterarions=iterations
         self.dumf=dumf
         self.rank=[]
+        self.aspercentage=aspercentage
         self.apply()
         self.__save_rank__()
     
@@ -106,11 +107,11 @@ class PageRank:
         '''
             Apply the pagerank algorithm over the graph
         '''
-        M=self.graph.create_incidence_matrix()
+        M=self.graph.create_adjacency_matrix()
         n=M.shape[1]
         rank=np.random.rand(n,1)
         rank/=np.linalg.norm(rank,1)
-        Mh=(rank*M+(1-rank)/n)
+        Mh=(self.dumf*M+(1-self.dumf)/n)
         for i in range(self.iterarions):
             rank = Mh@rank
         self.rank=rank/np.linalg.norm(rank,1)
@@ -119,7 +120,10 @@ class PageRank:
         i=0
         for ver in self.graph.get_vertexes():
             ver.add_updater("pagerank")
-            ver.update_val(key="pagerank",val=self.rank[i])
+            if self.aspercentage:
+                ver.update_val(key="pagerank",val=round(100*self.rank[i][0],2))
+            else:
+                ver.update_val(key="pagerank",val=self.rank[i][0])
             i+=1
     
     def get_ranks(self):

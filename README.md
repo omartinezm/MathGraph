@@ -61,7 +61,8 @@ target=v6
 dj=Dijkstra(g1,source=source,target=target)
 g1.draw(path=dj.get_path())
 ```
-4. A graph can be created from an incidence matrix.
+4. A graph can be created from an incidence matrix using a `numpy` matrix. Moreover, you can construct the incidence and adjacency matrix once you have a graph with the functions `create_incidence_matrix()`, `create_adjacency_matrix()`. The order of appearence of the vertex (rows) on the incidence matrix is given by the listing order of the vertex, same case for the columns and edges.
+
 
 ### Requirements
 `pyglet`, `numpy`.
