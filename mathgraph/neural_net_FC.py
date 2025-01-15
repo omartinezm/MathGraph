@@ -15,10 +15,10 @@ class NeuralNetFC(Graph):
         self.npl=npl
         self.vertex={}
         self.random=random
-        self.edges=self.__make_edges__(self.nlayers,npl)
+        self.edges=self.__make_edges__(self.nlayers,npl,updaters)
         self.add_edge(self.edges)
         
-    def __make_edges__(self,nlayers,npl):
+    def __make_edges__(self,nlayers,npl,updaters):
         """ Make and add the edges of the network
         
             This is a fully connected network.
@@ -31,13 +31,13 @@ class NeuralNetFC(Graph):
                 List with the number of neurons per layer       
         """
         edges=[]
-        layers=[self.__make_layer__(npl[i],i) for i in range(nlayers)]
+        layers=[self.__make_layer__(npl[i],i,updaters) for i in range(nlayers)]
         for n in tqdm(range(nlayers-1), desc="Connecting network"):
             for i in range(npl[n]):
                 for j in range(npl[n+1]):
                     edges.append(Edge(layers[n][i],layers[n+1][j],cost=random() if self.random else -1))
         return edges
-    def __make_layer__(self,nneurons,iden):
+    def __make_layer__(self,nneurons,iden,updater):
         """ Creates the neurons of the layer and add it to the list of neurons
         
             By default the neurons are named as "l(iden)_v(number)" where iden is a identifier of
@@ -53,7 +53,7 @@ class NeuralNetFC(Graph):
         """
         layer=[]
         for i in tqdm(range(nneurons),desc="Layer "+str(iden)):
-            tv=Neuron(name="L"+str(iden)+"_v"+str(i),bias=0)
+            tv=Neuron(name="L"+str(iden)+"_v"+str(i),bias=0,updaters=updater)
             layer.append(tv)
             self.vertex[tv.get_name()]=tv
             self.__in_degrees__[tv.get_name()]=0

@@ -1,7 +1,5 @@
-from mathgraph.tree_vertex import TreeVertex
 from mathgraph.vertex import Vertex
 from mathgraph.edge import Edge
-from mathgraph.draw_graph import DrawGraph
 import warnings
 import numpy as np
 
@@ -367,8 +365,8 @@ class Graph:
                 The vertex name
         """
         for key,val in self.vertex.items():
-            if val==name:
-                return key
+            if key == name:
+                return val
         return None
 
     def update(self,vertex=[],edge=[],propagate=False,exclude=[],back=False,key=None):
@@ -512,12 +510,6 @@ class Graph:
                 The function p_back is the back and forward propagation on a neuronal net.
         """
         self.updaters[key]=func
-    def draw(self,path=[],*arg,**kwargs):
-        """ Draw a graph using the DrawGraph class
-            
-        """
-        dg=DrawGraph(self,path,*arg,**kwargs)
-        dg.run()
         
     def __repr__(self):
         return "Graph (\n vertex="+str(self.get_vertexes())+",\n edges="+str(self.get_edges())+")"

@@ -14,4 +14,4 @@ class Neuron(Vertex):
         """
         return self.bias
     def __repr__(self):
-        return "Neuron (name='"+self.name+"', bias="+str(self.bias)+")"
+        return "Neuron (name='"+self.name+"', bias="+str(self.bias)+", updaters="+str(self.updaters)+")"

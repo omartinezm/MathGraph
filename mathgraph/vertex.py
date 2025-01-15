@@ -9,16 +9,16 @@ class Vertex(object):
             A name for the graph
         weight : float
             A number which indicates the weight of the vertex
-        contain : object
+        content : object
             An object
         updaters : dict
             A dictionary with all the stats an object to be updated in any change of the graph
     """
     kind = 'vertex'
-    def __init__(self,name,weight=0,contain=None,updaters=None):
+    def __init__(self,name,weight=0,content=None,updaters=None):
         self.weight=weight
         self.name=name
-        self.contain=contain
+        self.container=content
         self.updaters={}
         if updaters:
             self.__create_updaters__(updaters)
@@ -67,19 +67,17 @@ class Vertex(object):
         try:
             return self.updaters[key]
         except:
-            print("Updater does not exist. Will be added with zero as initial value.")
-            self.add_updater(key)
-            return self.updaters[key]
+            print("Updater does not exist.")
     
     def get_name(self):
         """ Return the name of the vertex
         """
         return self.name
     
-    def get_contain(self):
+    def get_content(self):
         """ Return the container of the vertex
         """
-        return self.contain
+        return self.content
     
     def set_contain(self, contain):
         """ Set the container of the vertex
