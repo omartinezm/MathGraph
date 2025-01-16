@@ -133,7 +133,7 @@ class NeuralNetFC(Graph):
             ==========
             data : list[list]
                 A list containing lists of input data
-            key : str, optiona
+            key : str, optional
                 The name of the key we want to train, if key is None we train all the keys
         """
         res=[]
